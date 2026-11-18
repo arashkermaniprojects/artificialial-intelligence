@@ -1,0 +1,129 @@
+{
+ "gh.0": {
+  "f": "gh_0.mp3",
+  "t": [
+   0.0,
+   2.74
+  ],
+  "d": 8.941,
+  "engine": "eleven"
+ },
+ "gh.1": {
+  "f": "gh_1.mp3",
+  "t": [
+   0.0,
+   2.438
+  ],
+  "d": 8.198,
+  "engine": "eleven"
+ },
+ "gh.2": {
+  "f": "gh_2.mp3",
+  "t": [
+   0.0,
+   6.699
+  ],
+  "d": 12.703,
+  "engine": "eleven"
+ },
+ "gh.3": {
+  "f": "gh_3.mp3",
+  "t": [
+   0.0,
+   2.345
+  ],
+  "d": 9.081,
+  "engine": "eleven"
+ },
+ "trace.0": {
+  "f": "trace_0.mp3",
+  "t": [
+   0.0,
+   2.183
+  ],
+  "d": 6.619,
+  "engine": "eleven"
+ },
+ "trace.1": {
+  "f": "trace_1.mp3",
+  "t": [
+   0.0,
+   3.564
+  ],
+  "d": 10.892,
+  "engine": "eleven"
+ },
+ "trace.2": {
+  "f": "trace_2.mp3",
+  "t": [
+   0.0,
+   3.75,
+   13.015
+  ],
+  "d": 15.35,
+  "engine": "eleven"
+ },
+ "trace.3": {
+  "f": "trace_3.mp3",
+  "t": [
+   0.0,
+   2.171
+  ],
+  "d": 8.57,
+  "engine": "eleven"
+ },
+ "trace.4": {
+  "f": "trace_4.mp3",
+  "t": [
+   0.0,
+   3.901
+  ],
+  "d": 11.821,
+  "engine": "eleven"
+ },
+ "trace.5": {
+  "f": "trace_5.mp3",
+  "t": [
+   0.0,
+   4.621
+  ],
+  "d": 12.285,
+  "engine": "eleven"
+ },
+ "puzzle.0": {
+  "f": "puzzle_0.mp3",
+  "t": [
+   0.0,
+   6.339
+  ],
+  "d": 10.102,
+  "engine": "eleven"
+ },
+ "puzzle.1": {
+  "f": "puzzle_1.mp3",
+  "t": [
+   0.0,
+   4.447
+  ],
+  "d": 8.338,
+  "engine": "eleven"
+ },
+ "puzzle.2": {
+  "f": "puzzle_2.mp3",
+  "t": [
+   0.0,
+   9.752
+  ],
+  "d": 17.858,
+  "engine": "eleven"
+ },
+ "puzzle.3": {
+  "f": "puzzle_3.mp3",
+  "t": [
+   0.0,
+   4.969
+  ],
+  "d": 14.932,
+  "engine": "eleven"
+ }
+}
