@@ -77,6 +77,203 @@ const exHead = {
   }
 };
 
+/* ---------- personal lab sheet (hand in): tasks and challenges generated from the student ID ---------- */
+const convJS = (img, k) => { const n = img.length, m = n - 2, out = []; for (let i = 0; i < m; i++) { out.push([]); for (let j = 0; j < m; j++) { let s = 0; for (let a = 0; a < 3; a++) for (let b = 0; b < 3; b++) s += img[i + a][j + b] * k[a][b]; out[i].push(s); } } return out; };
+const PY_CONV = String.raw`import numpy as np
+
+def conv2d(img, k):
+    """Slide the filter k over the image (no padding, stride 1): multiply and add."""
+    H, W = img.shape
+    kh, kw = k.shape
+    out = np.zeros((H - kh + 1, W - kw + 1))
+    for i in range(out.shape[0]):
+        for j in range(out.shape[1]):
+            out[i, j] = np.sum(img[i:i + kh, j:j + kw] * k)
+    return out
+
+def relu(x):
+    return np.maximum(0, x)
+
+def maxpool2(x):
+    """2 x 2 max pooling with stride 2 (an odd last row or column is dropped)."""
+    H, W = x.shape
+    return x[:H // 2 * 2, :W // 2 * 2].reshape(H // 2, 2, W // 2, 2).max(axis=(1, 3))
+`;
+const PY_IMGS = B => String.raw`import numpy as np
+rng = np.random.default_rng(${B.ds})
+
+def make_image(kind, rng):
+    """8 x 8 noisy image with a vertical bar (kind 0) or a horizontal bar (kind 1)."""
+    im = np.zeros((8, 8))
+    pos, start, length = rng.integers(1, 7), rng.integers(0, 3), rng.integers(4, 7)
+    if kind == 0:
+        im[start:start + length, pos] = 1
+    else:
+        im[pos, start:start + length] = 1
+    return im + ${B.noise} * rng.standard_normal((8, 8))
+
+def make_set(n, rng):
+    y = np.arange(n) % 2
+    return np.array([make_image(k, rng) for k in y]), y
+
+def relu(x):
+    return np.maximum(0, x)
+
+def backbone(images, filters):
+    """Frozen feature extractor: convolution, ReLU, then the max and the mean of each map."""
+    win = np.lib.stride_tricks.sliding_window_view(images, (3, 3), axis=(1, 2))
+    feats = []
+    for k in filters:
+        maps = relu(np.einsum("nijab,ab->nij", win, k))
+        feats += [maps.max(axis=(1, 2)), maps.mean(axis=(1, 2))]
+    return np.column_stack(feats)
+
+def train_head(F, y, epochs=2000, lr=0.5):
+    """The new head: logistic regression. Only w and b change."""
+    mu, sd = F.mean(0), F.std(0) + 1e-9
+    Z = (F - mu) / sd
+    w, b = np.zeros(F.shape[1]), 0.0
+    for _ in range(epochs):
+        p = 1 / (1 + np.exp(-(Z @ w + b)))
+        w -= lr * Z.T @ (p - y) / len(y)
+        b -= lr * np.mean(p - y)
+    return lambda G: (1 / (1 + np.exp(-(((G - mu) / sd) @ w + b))) > 0.5).astype(int)
+
+def test_right(head, G):
+    return int((head(G) == y_test).sum())
+`;
+const FILTERS8 = [
+  { name: 'an edge filter', py: '[[-1, 0, 1]] * 3' },
+  { name: 'a blur filter (all ones)', py: '[[1, 1, 1]] * 3' },
+  { name: 'a diagonal line filter', py: '[[2, -1, -1], [-1, 2, -1], [-1, -1, 2]]' },
+  { name: 'a weak line filter', py: '[[0, 1, 0]] * 3' },
+  { name: 'a dot filter', py: '[[-1, -1, -1], [-1, 8, -1], [-1, -1, -1]]' }
+];
+const SHEET8 = {
+  title: 'My personal lab sheet: CNNs and transfer learning', marks: 10,
+  intro: 'The numbers below are <b>personal</b>: they are generated from your student ID, so your image, your filter, your data set and your answers differ from those of your classmates. Every cell is complete on its own. Run each code cell (press ▶ Run), copy the results into the answer boxes, add a screenshot if you like, and finally download your sheet as <b>Word</b> or <b>PDF</b> and upload it to Moodle.',
+  base(r) {
+    // a personal image and filter with ONE largest value in the feature map
+    let n, img, k, fm, flat, mx, pos;
+    do { n = r.pick([6, 7, 8]); img = Array.from({ length: n }, () => Array.from({ length: n }, () => r.int(0, 4)));
+      do { k = [0, 1, 2].map(() => [0, 1, 2].map(() => r.int(-1, 2))); } while (!k.flat().some(v => v < 0) || !k.flat().some(v => v > 0));
+      fm = convJS(img, k); flat = fm.flat(); mx = Math.max(...flat);
+    } while (flat.filter(v => v === mx).length !== 1 || !flat.some(v => v < 0));
+    const m = n - 2; do { pos = [r.int(0, m - 1), r.int(0, m - 1)]; } while (fm[pos[0]][pos[1]] === mx);   // not the largest value (asked separately)
+    const ds = r.int(1, 999), noise = r.pick([0.3, 0.35, 0.4, 0.45]), small = r.pick([10, 14, 20, 24]), rs = r.int(1, 999);
+    const filt = r.pick(FILTERS8), sizes = [r.pick([6, 8, 10]), r.pick([30, 40, 50]), r.pick([150, 200])];
+    return { n, img, k, pos, ds, noise, small, rs, filt, sizes };
+  },
+  tasks: [
+    { id: 't1', title: 'Convolve your image', marks: 1.5, gen(r, B) {
+      const code = PY_CONV + `
+img = np.array(${JSON.stringify(B.img)})     # your ${B.n} x ${B.n} image
+k = np.array(${JSON.stringify(B.k)})         # your 3 x 3 filter
+fmap = conv2d(img, k)
+print("feature map shape:", fmap.shape)
+print(fmap)
+print("value at row ${B.pos[0]}, column ${B.pos[1]}:", fmap[${B.pos[0]}, ${B.pos[1]}])
+i, j = np.unravel_index(fmap.argmax(), fmap.shape)
+print("largest value:", fmap.max(), "at row", i, "column", j)
+`;
+      return { html: `<p>Your image is ${B.n} × ${B.n} pixels and your filter is 3 × 3 (both are in the cell). Run the convolution (no padding, stride 1). Report the shape of the feature map, its value at row <b>${B.pos[0]}</b>, column <b>${B.pos[1]}</b> (counting from 0), and the largest value with its position. Check the value at row ${B.pos[0]}, column ${B.pos[1]} by hand: write the nine products.</p>`, code,
+        fields: [{ k: 'shape', label: 'Feature map shape, for example (4, 4)', type: 'text' }, { k: 'v', label: `Value at row ${B.pos[0]}, column ${B.pos[1]}`, type: 'num' }, { k: 'hand', label: 'Your hand check (the nine products and their sum)', type: 'long' }, { k: 'max', label: 'Largest value and its row, column', type: 'text' }],
+        key: code.replace('print("feature map shape:", fmap.shape)\nprint(fmap)', 'print("ANS shape", fmap.shape)').replace(`print("value at row ${B.pos[0]}, column ${B.pos[1]}:",`, 'print("ANS value",').replace('print("largest value:", fmap.max(), "at row", i, "column", j)', 'print("ANS largest", fmap.max(), "row", i, "column", j)') }; } },
+    { id: 't2', title: 'ReLU and pooling of your map', marks: 1.5, gen(r, B) {
+      const code = PY_CONV + `
+img = np.array(${JSON.stringify(B.img)})
+k = np.array(${JSON.stringify(B.k)})
+fmap = conv2d(img, k)
+act = relu(fmap)
+print("values set to 0 by ReLU:", int((fmap < 0).sum()))
+pooled = maxpool2(act)
+print("after pooling, shape:", pooled.shape)
+print(pooled)
+print("sum of the pooled values:", pooled.sum())
+`;
+      return { html: `<p>Apply ReLU to your feature map from Task 1, then 2 × 2 max pooling. Report how many values ReLU set to 0, the shape after pooling, the pooled values, and their sum.${B.n === 7 ? ' Your feature map has an odd size: explain in the last box what pooling does with the last row and column.' : ''}</p>`, code,
+        fields: [{ k: 'z', label: 'Values set to 0 by ReLU', type: 'num' }, { k: 'shape', label: 'Shape after pooling', type: 'text' }, { k: 'pool', label: 'The pooled values (row by row)', type: 'long' }, { k: 'sum', label: 'Sum of the pooled values', type: 'num' }].concat(B.n === 7 ? [{ k: 'odd', label: 'What happens to the last row and column?', type: 'long' }] : []),
+        key: code.replace('print("values set to 0 by ReLU:",', 'print("ANS relu_zeros",').replace('print("after pooling, shape:", pooled.shape)\nprint(pooled)', 'print("ANS pooled_shape", pooled.shape); print("ANS pooled", pooled.tolist())').replace('print("sum of the pooled values:",', 'print("ANS pooled_sum",'),
+        note: 'Only negative values count as "set to 0" (values that are already 0 stay 0). For a 5 × 5 map the last row and column are dropped by maxpool2.' }; } },
+    { id: 't3', title: 'Frozen line filters on your data set', marks: 1.5, gen(r, B) {
+      const code = PY_IMGS(B) + `
+X_small, y_small = make_set(${B.small}, rng)     # only ${B.small} labelled images
+X_test, y_test = make_set(400, rng)
+
+line_v = np.array([[-1, 2, -1]] * 3)
+good = [line_v, line_v.T]
+head = train_head(backbone(X_small, good), y_small)
+print("line filters: test right", test_right(head, backbone(X_test, good)), "of 400")
+
+head_px = train_head(X_small.reshape(len(X_small), -1), y_small)
+print("raw pixels  : test right", test_right(head_px, X_test.reshape(400, -1)), "of 400")
+`;
+      return { html: `<p>Your data set has noise <b>${B.noise}</b> and seed <b>${B.ds}</b>, with only <b>${B.small}</b> training images and 400 test images. Train the head on the frozen line filters, and a second head on the raw pixels. Report how many of the 400 test images each one gets right.</p>`, code,
+        fields: [{ k: 'line', label: 'Line filters: test images right (out of 400)', type: 'num' }, { k: 'px', label: 'Raw pixels: test images right (out of 400)', type: 'num' }],
+        key: code.replace('print("line filters: test right",', 'print("ANS line_filters_right",').replace('print("raw pixels  : test right",', 'print("ANS raw_pixels_right",'),
+        note: 'Different numpy versions may flip one or two test images near the boundary: accept answers within 2 of the key.' }; } },
+    { id: 't4', title: 'Random frozen filters', marks: 1.5, gen(r, B) {
+      const code = PY_IMGS(B) + `
+X_small, y_small = make_set(${B.small}, rng)
+X_test, y_test = make_set(400, rng)
+
+r = np.random.default_rng(${B.rs})               # your random filters
+rand = [r.standard_normal((3, 3)) for _ in range(2)]
+F = backbone(X_small, rand)
+print("features of the first training image:", F[0].round(3))
+head_r = train_head(F, y_small)
+print("random filters: test right", test_right(head_r, backbone(X_test, rand)), "of 400")
+`;
+      return { html: `<p>Same data as Task 3, but now the frozen backbone uses two <b>random</b> filters made with seed <b>${B.rs}</b>. Report the four features (max and mean of each map) of the first training image, and how many test images the head gets right. Is it better or worse than the line filters of Task 3?</p>`, code,
+        fields: [{ k: 'f', label: 'Four features of the first image (3 decimals)', type: 'text' }, { k: 'rnd', label: 'Random filters: test images right (out of 400)', type: 'num' }, { k: 'cmp', label: 'Better or worse than the line filters?', type: 'text' }],
+        key: code.replace('print("features of the first training image:", F[0].round(3))', 'print("ANS features_first_image", F[0].round(3).tolist())').replace('print("random filters: test right",', 'print("ANS random_filters_right",'),
+        note: 'Accept test counts within 2 of the key. Compare with the line_filters_right value of Task 3.' }; } },
+    { id: 'c1', kind: 'challenge', title: 'Your own backbone filter', marks: 2, gen(r, B) {
+      const head = PY_IMGS(B) + `
+X_small, y_small = make_set(${B.small}, rng)
+X_test, y_test = make_set(400, rng)
+`;
+      const code = head + `
+line_v = np.array([[-1, 2, -1]] * 3)    # CHANGE THIS LINE to your filter
+filters = [line_v, line_v.T]
+head = train_head(backbone(X_small, filters), y_small)
+print("test right", test_right(head, backbone(X_test, filters)), "of 400")
+`;
+      const key = head + `
+for name, kv in [("line", np.array([[-1, 2, -1]] * 3)), ("yours", np.array(${B.filt.py}))]:
+    filters = [kv, kv.T]
+    head = train_head(backbone(X_small, filters), y_small)
+    print("ANS", name, "test_right", test_right(head, backbone(X_test, filters)))
+`;
+      return { html: `<p>Same data as Task 3. Replace the line filter by <b>${B.filt.name}</b>: <code>line_v = np.array(${B.filt.py})</code> (the second filter is its transpose). Report how many test images the head gets right with your filter. Then explain in two sentences, with your numbers and those of Task 3: why does the choice of the frozen filter matter so much when you have only ${B.small} training images?</p>`, code,
+        fields: [{ k: 'right', label: 'Your filter: test images right (out of 400)', type: 'num' }, { k: 'why', label: 'Your explanation (two sentences)', type: 'long' }, { k: 'code', label: 'Your changed line (paste your code)', type: 'code' }], key,
+        note: 'Accept counts within 2 of the key. The explanation: the head only sees what the frozen filters measure; a filter that does not respond to thin bars (or responds the same way to both kinds) gives features that do not separate the classes, and a few images cannot fix that because the backbone is not trained.' }; } },
+    { id: 'c2', kind: 'challenge', title: 'How much data do raw pixels need?', marks: 2, gen(r, B) {
+      const head = PY_IMGS(B) + `
+X_all, y_all = make_set(${B.sizes[2]}, rng)      # a pool of training images
+X_test, y_test = make_set(400, rng)
+good = [np.array([[-1, 2, -1]] * 3), np.array([[-1, 2, -1]] * 3).T]
+`;
+      const code = head + `
+for n in ${JSON.stringify(B.sizes)}:
+    Xs, ys = X_all[:n], y_all[:n]                # the first n images
+    # YOUR CODE HERE: train one head on backbone(Xs, good) and one head on the raw pixels,
+    # then print n and the test images right for both
+    pass
+`;
+      const key = head + `
+for n in ${JSON.stringify(B.sizes)}:
+    Xs, ys = X_all[:n], y_all[:n]
+    h1 = train_head(backbone(Xs, good), ys)
+    h2 = train_head(Xs.reshape(n, -1), ys)
+    print("ANS n", n, "line_filters", test_right(h1, backbone(X_test, good)), "raw_pixels", test_right(h2, X_test.reshape(400, -1)))
+`;
+      return { html: `<p>Finish the loop: for <b>${B.sizes.join(', ')}</b> training images, train one head on the frozen line filters and one head on the raw pixels, and print the test images right (out of 400) for both. Report your table. In two sentences: do the raw pixels catch up when there is more data, and why do the frozen features need so few images?</p>`, code,
+        fields: [{ k: 'tab', label: 'Your table: n, line filters right, raw pixels right', type: 'long' }, { k: 'why', label: 'Your explanation (two sentences)', type: 'long' }, { k: 'code', label: 'Your finished loop (paste your code)', type: 'code' }], key,
+        note: 'Accept counts within 2 of the key. The max over a feature map ignores where the bar is, so the head has only 4 inputs to learn; raw pixels must learn every position separately and need much more data.' }; } }
+  ]
+};
+
 Course.lecture({
   id: 'lab08', num: 8, week: 8, kind: 'lab', title: 'CNNs and transfer learning (revision lab)',
   lede: 'Write a convolution with two loops, check it against the lecture numbers, add ReLU and pooling, and then do transfer learning in miniature: a frozen feature extractor and a tiny trainable head that learns from only twenty images.',
@@ -197,6 +394,10 @@ print("raw pixels     : test accuracy", np.mean(head_px(X_test.reshape(len(X_tes
       { exercise: exConvParams },
       { quiz: { q: 'In cell 4, what does <code>train_head</code> change?', options: ['Only the head weights w and the bias b', 'The two filters in the backbone', 'The training images', 'Nothing: it only measures accuracy'], correct: 0, why: 'The backbone is frozen. Gradient descent updates only w and b of the logistic regression head.' } },
       { quiz: { q: 'Raw pixels did much worse than the line features with only 20 images. Why?', options: ['The bar can be at many positions, and 20 examples are too few to learn every pixel pattern; the features already ignore position', 'Pixels contain no information', 'Logistic regression cannot use 64 inputs', 'The test set is too large'], correct: 0, why: 'Max over a feature map does not care where the bar is. The raw-pixel model must learn each position separately, which needs much more data.' } }
+    ] }
+    ,{ id: 'sheet', title: 'Your personal lab sheet (hand in)', blocks: [
+      { html: '<p>This is the part you <b>hand in</b>. Your teacher gets your file from Moodle and compares it with the answers generated from your ID.</p>' },
+      { labsheet: SHEET8 }
     ] }
   ]
 });

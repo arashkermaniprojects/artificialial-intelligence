@@ -198,6 +198,120 @@ print('\\n'.join(''.join(row) for row in grid))
 print('cells opened:', opened, '  path length:', len(path) - 1)
 `;
 
+/* ---------- personal lab sheet (hand in): a personal graph and a personal maze generated from the student ID ---------- */
+const keyOf = (code, reps) => reps.reduce((c, [a, b]) => { if (!c.includes(a)) throw new Error('sheet key: line not found: ' + a); return c.replace(a, b); }, code);
+const NODES2 = ['S', 'A', 'B', 'C', 'D', 'E', 'F', 'G'];
+// JS copies of the python searches, used only to pick graphs and mazes whose answers are well defined
+function gBfs(g) { const fr = ['S'], par = { S: null }, op = []; while (fr.length) { const n = fr.shift(); op.push(n); if (n === 'G') { const p = []; for (let x = n; x; x = par[x]) p.push(x); return { path: p.reverse(), op }; } for (const nb of g[n]) if (!(nb in par)) { par[nb] = n; fr.push(nb); } } return null; }
+function gDfs(g) { const fr = [['S', null]], par = {}, op = []; while (fr.length) { const [n, pp] = fr.pop(); if (n in par) continue; par[n] = pp; op.push(n); if (n === 'G') { const p = []; for (let x = n; x; x = par[x]) p.push(x); return { path: p.reverse(), op }; } for (const nb of g[n].slice().reverse()) if (!(nb in par)) fr.push([nb, n]); } return null; }
+function mSearch(M, stack) {
+  const R = M.length, C = M[0].length, key = (a, b) => a * 100 + b; let s, gl;
+  for (let i = 0; i < R; i++) for (let j = 0; j < C; j++) { if (M[i][j] === 'S') s = [i, j]; if (M[i][j] === 'G') gl = [i, j]; }
+  const fr = [s], par = new Map([[key(...s), null]]); let opened = 0, big = 1, found = false;
+  while (fr.length) {
+    const c = stack ? fr.pop() : fr.shift(); opened++;
+    if (c[0] === gl[0] && c[1] === gl[1]) { found = true; break; }
+    for (const [dr, dc] of [[-1, 0], [0, 1], [1, 0], [0, -1]]) { const a = c[0] + dr, b = c[1] + dc; if (a >= 0 && a < R && b >= 0 && b < C && M[a][b] !== '#' && !par.has(key(a, b))) { par.set(key(a, b), c); fr.push([a, b]); } }
+    big = Math.max(big, fr.length);
+  }
+  if (!found) return null;
+  const path = []; for (let c = gl; c; c = par.get(key(...c))) path.push(c);
+  return { opened, len: path.length - 1, path: path.reverse(), big };
+}
+const setCell = (M, i, j, ch) => M.map((row, a) => a === i ? row.slice(0, j) + ch + row.slice(j + 1) : row);
+const pyGraph = g => 'graph = {\n' + NODES2.map(n => `    '${n}': [${g[n].map(x => `'${x}'`).join(', ')}]`).join(',\n') + '\n}\n';
+const pyMaze = M => 'maze = [\n' + M.map(row => `    "${row}",`).join('\n') + '\n]\n';
+const withGraph = (code, g) => { const c = code.replace(/graph = \{[\s\S]*?\n\}\n/, pyGraph(g)); if (c === code) throw new Error('sheet: graph not replaced'); return c; };
+const withMaze = (code, M, stack) => { const c = code.replace(/maze = \[[\s\S]*?\n\]\n/, pyMaze(M)).replace('USE_STACK = False', 'USE_STACK = ' + (stack ? 'True ' : 'False')); if (c === code) throw new Error('sheet: maze not replaced'); return c; };
+const MAZE_KEY = [["print('cells opened:', opened, '  path length:', len(path) - 1)", "print('ANS cells_opened', opened); print('ANS path_length', len(path) - 1)"]];
+const SHEET2 = {
+  title: 'My personal lab sheet: uninformed search', marks: 10,
+  intro: 'Your graph and your maze are <b>personal</b>: they are generated from your student ID, so your answers differ from those of your classmates. Run each code cell (press ▶ Run), copy the results into the answer boxes, add a screenshot of your results if you like, and finally download your sheet as <b>Word</b> or <b>PDF</b> and upload it to Moodle.',
+  base(r) {
+    let g, b, d;
+    do {   // a random graph with arrows only "forward" in a personal order of the nodes
+      const order = ['S', ...r.shuffle(['A', 'B', 'C', 'D', 'E', 'F']), 'G']; g = {};
+      order.forEach((n, i) => { const later = order.slice(i + 1); g[n] = r.shuffle(later).slice(0, Math.min(later.length, r.int(1, 3))); });
+      b = gBfs(g); d = gDfs(g);
+    } while (!b || b.path.length < 3 || b.op.length < 5 || d.path.length <= b.path.length);
+    const R = r.int(6, 7), C = r.int(9, 11); let M, mb, ms, wall;
+    for (;;) {
+      const gl = [r.int(Math.floor(R / 2), R - 1), C - 1 - r.int(0, 1)];
+      M = Array.from({ length: R }, (_, i) => Array.from({ length: C }, (_, j) => (i === 0 && j === 0) ? 'S' : (i === gl[0] && j === gl[1]) ? 'G' : (r.chance(0.3) ? '#' : '.')).join(''));
+      mb = mSearch(M, false); ms = mSearch(M, true);
+      if (!mb || mb.len < 10 || ms.len <= mb.len || ms.big === mb.big) continue;
+      const cand = mb.path.slice(1, -1).filter(([i, j]) => { const x = mSearch(setCell(M, i, j, '#'), false); return x && x.len > mb.len; });
+      if (!cand.length) continue;
+      wall = r.pick(cand); break;
+    }
+    return { g, M, wall };
+  },
+  tasks: [
+    { id: 't1', title: 'Breadth-first search on your graph', marks: 1.5, gen(r, B) {
+      const code = withGraph(PY_BFS, B.g);
+      return { html: `<p>Your graph: ${NODES2.filter(n => B.g[n].length).map(n => `<b>${n}</b> → ${B.g[n].join(', ')}`).join('; ')}. Run breadth-first search from S to G. Report the order in which the nodes are opened, the path, and its number of steps.</p>`, code,
+        fields: [{ k: 'opened', label: 'Opened nodes, in order (for example S A B ...)', type: 'text' }, { k: 'path', label: 'Path (for example S -> A -> G)', type: 'text' }, { k: 'steps', label: 'Number of steps', type: 'num' }],
+        key: keyOf(code, [["print('opened :', ' '.join(opened))", "print('ANS opened', ' '.join(opened))"], ["print('path   :', ' -> '.join(path), f'({len(path) - 1} steps)')", "print('ANS path', ' -> '.join(path)); print('ANS steps', len(path) - 1)"]]) }; } },
+    { id: 't2', title: 'Depth-first search on your graph', marks: 1.5, gen(r, B) {
+      const code = withGraph(PY_DFS, B.g);
+      return { html: '<p>Now run depth-first search on the <b>same</b> graph (the cell already contains it). Report the opened nodes, the path and its number of steps. Which search found the shorter path?</p>', code,
+        fields: [{ k: 'opened', label: 'Opened nodes, in order', type: 'text' }, { k: 'path', label: 'Path', type: 'text' }, { k: 'steps', label: 'Number of steps', type: 'num' }, { k: 'shorter', label: 'Shorter path found by (breadth-first or depth-first)', type: 'text' }],
+        key: keyOf(code, [["print('opened :', ' '.join(opened))", "print('ANS opened', ' '.join(opened))"], ["print('path   :', ' -> '.join(path), f'({len(path) - 1} steps)')", "print('ANS path', ' -> '.join(path)); print('ANS steps', len(path) - 1); print('ANS shorter', 'breadth-first')"]]) }; } },
+    { id: 't3', title: 'Your maze with a queue', marks: 1.5, gen(r, B) {
+      const code = withMaze(PY_MAZE, B.M, false);
+      return { html: `<p>Your maze has ${B.M.length} rows and ${B.M[0].length} columns. Run the maze search with <code>USE_STACK = False</code> (breadth-first). How many cells are opened, and how long is the path?</p>`, code,
+        fields: [{ k: 'opened', label: 'Cells opened', type: 'num' }, { k: 'len', label: 'Path length', type: 'num' }],
+        key: keyOf(code, MAZE_KEY) }; } },
+    { id: 't4', title: 'Your maze with a stack', marks: 1.5, gen(r, B) {
+      const code = withMaze(PY_MAZE, B.M, true);
+      return { html: '<p>Run the same maze with <code>USE_STACK = True</code> (the cell is already set). How many cells are opened, and how long is the path now? Is this path the shortest one?</p>', code,
+        fields: [{ k: 'opened', label: 'Cells opened', type: 'num' }, { k: 'len', label: 'Path length', type: 'num' }, { k: 'short', label: 'Is it the shortest path? (yes or no)', type: 'text' }],
+        key: keyOf(code, MAZE_KEY.concat([["print('ANS path_length', len(path) - 1)", "print('ANS path_length', len(path) - 1); print('ANS shortest', 'no')"]])) }; } },
+    { id: 'c1', kind: 'challenge', title: 'How big does the frontier get?', marks: 2, gen(r, B) {
+      const code = `from collections import deque
+
+${pyMaze(B.M)}R, C = len(maze), len(maze[0])
+find = lambda ch: next((r, c) for r in range(R) for c in range(C) if maze[r][c] == ch)
+start, goal = find('S'), find('G')
+
+def neighbours(r, c):
+    for dr, dc in [(-1, 0), (0, 1), (1, 0), (0, -1)]:     # up, right, down, left
+        nr, nc = r + dr, c + dc
+        if 0 <= nr < R and 0 <= nc < C and maze[nr][nc] != '#':
+            yield (nr, nc)
+
+def search(use_stack):
+    frontier = deque([start])
+    parent = {start: None}
+    biggest = 1                  # the largest size of the frontier seen so far
+    while frontier:
+        cell = frontier.pop() if use_stack else frontier.popleft()
+        if cell == goal:
+            break
+        for nb in neighbours(*cell):
+            if nb not in parent:
+                parent[nb] = cell
+                frontier.append(nb)
+        # YOUR CODE HERE: after the neighbours are added, update biggest
+    return biggest
+
+print("largest frontier with a queue:", search(False))
+print("largest frontier with a stack:", search(True))
+`;
+      return { html: '<p>The frontier is the memory of the search. Finish the code: after the neighbours of a cell are added, update <code>biggest</code> so that it holds the largest size the frontier ever had. Run it on your maze for the queue (breadth-first) and for the stack. Which one needs more memory here? Paste your finished line(s) into the last box.</p>', code,
+        fields: [{ k: 'q', label: 'Largest frontier with a queue', type: 'num' }, { k: 's', label: 'Largest frontier with a stack', type: 'num' }, { k: 'more', label: 'Which needs more memory in my maze?', type: 'text' }, { k: 'code', label: 'Your finished code', type: 'code' }],
+        key: keyOf(code, [['        # YOUR CODE HERE: after the neighbours are added, update biggest', '        biggest = max(biggest, len(frontier))'], ['print("largest frontier with a queue:", search(False))\nprint("largest frontier with a stack:", search(True))', 'q, s = search(False), search(True)\nprint("ANS queue", q); print("ANS stack", s); print("ANS more_memory", "queue" if q > s else "stack")']]),
+        note: 'Accept the update placed after the for loop (or after each append): both give the same largest size. In this code a cell is marked when it is ADDED, so the stack keeps many waiting cells and is often the bigger one; the key says which is bigger for this maze.' }; } },
+    { id: 'c2', kind: 'challenge', title: 'Block the shortest path', marks: 2, gen(r, B) {
+      const [wr, wc] = B.wall, row = B.M[wr], newRow = setCell(B.M, wr, wc, '#')[wr];
+      const code = withMaze(PY_MAZE, B.M, false);
+      return { html: `<p>Put a wall on your shortest path: in row <b>${wr}</b> of the maze (the first row is row 0), change column <b>${wc}</b> into <code>#</code>, so the row <code>"${row}"</code> becomes <code>"${newRow}"</code>. Run breadth-first again. What are the new path length and the number of cells opened? Explain in two sentences why breadth-first still finds the shortest path, and why the stack version does not promise this.</p>`, code,
+        fields: [{ k: 'len', label: 'New path length', type: 'num' }, { k: 'opened', label: 'Cells opened', type: 'num' }, { k: 'why', label: 'Your explanation (two sentences)', type: 'long' }],
+        key: keyOf(withMaze(PY_MAZE, setCell(B.M, wr, wc, '#'), false), MAZE_KEY),
+        note: 'Breadth-first opens cells in order of their distance from S (a queue), so the first time it opens G it has used the fewest steps. A stack follows one branch deep first and can reach G by a long detour.' }; } }
+  ]
+};
+
 Course.lecture({
   id: 'lab02', num: 2, week: 2, kind: 'lab', title: 'Uninformed search',
   lede: 'Write breadth-first and depth-first search in a few lines of Python, run them on a graph and on a maze, and see the queue and the stack at work.',
@@ -233,6 +347,10 @@ Course.lecture({
       { note: '<b>Your tasks.</b> (1) Run with both values of <code>USE_STACK</code> and copy the two results into a small table. (2) Put a wall <code>#</code> in the top row at column 8 (the row becomes <code>"S.......#."</code>). Run breadth-first again: what is the new shortest path length? (3) In one sentence: when would you prefer breadth-first, and when depth-first?' },
       { deeper: { title: 'Answer to task 2', html: '<p>The top route is blocked at column 8, so the path must go down column 7 and around: breadth-first now reports a <b>path length of 15</b>. Breadth-first always finds the fewest steps; a stack-based search may not.</p>' } },
       { quiz: { q: 'In the maze, why does the code check <code>if nb not in parent</code> before adding a neighbour?', options: ['To make the search faster only', 'So that no square is added twice; without it the search could go back and forth forever', 'Because Python needs it', 'To find the cheapest path'], correct: 1, why: 'Squares have many neighbours and the maze has loops. The parent dictionary remembers every square already reached, so each square enters the frontier at most once.' } }
+    ] }
+    ,{ id: 'sheet', title: 'Your personal lab sheet (hand in)', blocks: [
+      { html: '<p>This is the part you <b>hand in</b>. Your teacher gets your file from Moodle and compares it with the answers generated from your ID.</p>' },
+      { labsheet: SHEET2 }
     ] }
   ]
 });

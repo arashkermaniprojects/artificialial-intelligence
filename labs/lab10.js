@@ -138,6 +138,134 @@ for s in ['the cat sat on the mat .',
     print(f'{s:26s} P = {p:.1e}   perplexity = {ppl:5.2f}')
 `;
 
+/* ---------- personal lab sheet (hand in): every student gets a personal training text from the student ID ---------- */
+const SH_NOUNS = ['cat', 'dog', 'bird', 'fox', 'cow', 'goat', 'duck', 'fish', 'bone', 'ball', 'hat', 'tree', 'rug', 'mat', 'cake', 'book'];
+const SH_VERBS = ['saw', 'ate', 'found', 'liked', 'chased', 'took', 'had', 'met'];
+const SH_DET = ['the', 'the', 'a'];
+const shHalf = (c, n) => { const x = c / n * 100, f = x - Math.floor(x); return Math.abs(f - 0.5) > 1e-6; };   // two decimals not on a .5 boundary
+const shTop = row => { const e = Object.entries(row || {}).sort((x, y) => y[1] - x[1]); return e.length && (e.length === 1 || e[0][1] > e[1][1]) ? e[0][0] : null; };
+const shSum = row => Object.values(row || {}).reduce((a, b) => a + b, 0);
+// lines: plain python strings, or [label, expression, answer name, indent] -> print(label, expr) for the student, print("ANS name", expr) for the key
+const shOut = lines => {
+  const f = k => lines.map(l => Array.isArray(l) ? `${l[3] || ''}print(${k ? JSON.stringify('ANS ' + l[2]) : JSON.stringify(l[0])}, ${l[1]})` : l).join('\n') + '\n';
+  return { code: f(false), key: f(true) };
+};
+const L10_BASE = B => `import numpy as np
+
+# your personal training text (made from your student ID)
+text = """${B.lines.join('\n')}"""
+
+words = text.split()
+vocab = sorted(set(words))
+idx = {w: i for i, w in enumerate(vocab)}
+V = len(vocab)
+counts = np.zeros((V, V))
+for a, b in zip(words[:-1], words[1:]):
+    counts[idx[a], idx[b]] += 1
+probs = counts / counts.sum(axis=1, keepdims=True)
+`;
+const L10_GEN = `
+def adjust(p, T=1.0, k=None):
+    q = np.where(p > 0, p ** (1.0 / T), 0.0)
+    if k is not None:
+        cut = np.sort(q)[-k]
+        q = np.where(q >= cut, q, 0.0)
+    return q / q.sum()
+
+def generate(start, n, T=1.0, k=None, seed=0):
+    rng = np.random.RandomState(seed)
+    out = [start]
+    for _ in range(n):
+        p = adjust(probs[idx[out[-1]]], T, k)
+        out.append(vocab[rng.choice(V, p=p)])
+    return ' '.join(out)
+`;
+const SHEET10 = {
+  title: 'My personal lab sheet: language models', marks: 10,
+  intro: 'Your training text below is <b>personal</b>: it is made from your student ID, so your counts, probabilities and generated sentences differ from those of your classmates. Run each code cell (press ▶ Run), copy the results into the answer boxes, add a screenshot if you like, and finally download your sheet as <b>Word</b> or <b>PDF</b> and upload it to Moodle.',
+  base(r) {
+    for (;;) {
+      const nouns = r.shuffle(SH_NOUNS).slice(0, 6), verbs = r.shuffle(SH_VERBS).slice(0, 3), n = r.int(10, 13), S = [];
+      for (let i = 0; i < n; i++) S.push([r.pick(SH_DET), r.pick(nouns), r.pick(verbs), r.pick(SH_DET), r.pick(nouns), '.']);
+      const ws = [].concat(...S), bi = {}, tri = {};
+      for (let i = 0; i + 1 < ws.length; i++) { (bi[ws[i]] = bi[ws[i]] || {}); bi[ws[i]][ws[i + 1]] = (bi[ws[i]][ws[i + 1]] || 0) + 1; }
+      for (let i = 0; i + 2 < ws.length; i++) { const c = ws[i] + ' ' + ws[i + 1]; (tri[c] = tri[c] || {}); tri[c][ws[i + 2]] = (tri[c][ws[i + 2]] || 0) + 1; }
+      const theRow = bi.the, nThe = shSum(theRow), top = shTop(theRow);
+      if (!top || !shHalf(theRow[top], nThe)) continue;
+      const xs = Object.keys(theRow).filter(w => w !== top && shHalf(theRow[w], nThe));
+      const usedV = verbs.filter(v => bi[v]), usedN = nouns.filter(w => ws.includes(w));
+      const ctxs = usedV.filter(v => { const row = tri[v + ' the'], t = shTop(row); return row && shSum(row) >= 2 && t && shHalf(row[t], shSum(row)); });
+      if (!xs.length || !ctxs.length || usedN.length < 4 || usedV.length < 2) continue;
+      const X = r.pick(xs), pv = r.pick(usedV), ctx = r.pick(ctxs);
+      const sents = S.map(s => s.join(' ')), seen = t => t.every((w, i) => i === 0 || (bi[t[i - 1]] && bi[t[i - 1]][w]));
+      const smooth = r.pick([0.1, 0.2, 0.5, 1.0]), NV = new Set(ws).size, wantNewLower = r.chance(0.5);
+      const ppl = t => { let lp = 0; for (let i = 1; i < t.length; i++) { const row = bi[t[i - 1]] || {}; lp += Math.log(((row[t[i]] || 0) + smooth) / (shSum(row) + smooth * NV)); } return Math.exp(-lp / (t.length - 1)); };
+      // s1 from the text, s2 NEW but made of word pairs from the text; for half of the students the new sentence scores better (lower perplexity)
+      let s1, snew, tries = 0;
+      do { const t = [r.pick(['the', 'a']), r.pick(usedN), r.pick(usedV), r.pick(['the', 'a']), r.pick(usedN), '.'], k = r.int(0, S.length - 1); snew = t.join(' '); s1 = sents[k];
+        const d = ppl(t) - ppl(S[k]), ok = !sents.includes(snew) && Math.abs(d) > 0.1 && [ppl(t), ppl(S[k])].every(v => { const f = v * 100 - Math.floor(v * 100); return Math.abs(f - 0.5) > 0.02; });
+        if (!ok || (tries++ < 400 && (!seen(t) || (d < 0) !== wantNewLower))) snew = null; } while (!snew);
+      const lines = []; for (let i = 0; i < sents.length; i += 3) lines.push(sents.slice(i, i + 3).join(' '));
+      return { lines, nouns: usedN, X, top, pv, ctx, s1, snew, smooth,
+        T: r.pick([0.5, 0.7, 1.5, 2.0]), start: r.pick(usedN), len: r.int(6, 9), seed: r.int(1, 99), Th: r.pick([1.5, 2.0, 3.0]), cseed: r.int(1, 99), Y: r.pick(usedN.filter(w => w !== X && w !== top)) };
+    }
+  },
+  tasks: [
+    { id: 't1', title: 'Count your words and pairs', marks: 1.5, gen(r, B) {
+      const o = shOut([L10_BASE(B), ['tokens:', 'len(words)', 'tokens'], ['vocabulary size:', 'V', 'vocab'],
+        [`count of the pair (the, ${B.Y}):`, `int(counts[idx["the"], idx["${B.Y}"]])`, 'pair_the_' + B.Y],
+        [`count of the pair (${B.pv}, a):`, `int(counts[idx["${B.pv}"], idx["a"]]) if "a" in idx else 0`, 'pair_' + B.pv + '_a'],
+        [`times "the" is followed by a word:`, `int(counts[idx["the"]].sum())`, 'the_total']]);
+      return { html: `<p>The cell builds a bigram model from <b>your</b> text. Run it and report the number of tokens, the vocabulary size, how often the pairs <b>"the ${B.Y}"</b> and <b>"${B.pv} a"</b> appear, and how often "the" is followed by any word.</p>`, code: o.code,
+        fields: [{ k: 'tokens', label: 'Number of tokens', type: 'num' }, { k: 'vocab', label: 'Vocabulary size', type: 'num' }, { k: 'pair', label: `Count of the pair (the, ${B.Y})`, type: 'num' }, { k: 'pair2', label: `Count of the pair (${B.pv}, a)`, type: 'num' }, { k: 'row', label: 'Times "the" is followed by a word', type: 'num' }], key: o.key }; } },
+    { id: 't2', title: 'The most likely next word', marks: 1.5, gen(r, B) {
+      const o = shOut([L10_BASE(B), 'p = probs[idx["the"]]', 'best = int(np.argmax(p))',
+        ['most likely word after "the":', 'vocab[best]', 'top_word'], ['its probability:', 'round(p[best], 2)', 'top_p'],
+        [`P(${B.X} | the):`, `round(p[idx["${B.X}"]], 2)`, 'p_x']]);
+      return { html: `<p>Use the probabilities <code>probs</code>. Which word is most likely after <b>"the"</b> in your text, and with what probability? Also report <b>P(${B.X} | the)</b>. Check one of them by hand: count / row total.</p>`, code: o.code,
+        fields: [{ k: 'w', label: 'Most likely word after "the"', type: 'text' }, { k: 'p', label: 'Its probability (2 decimals)', type: 'num' }, { k: 'px', label: `P(${B.X} | the) (2 decimals)`, type: 'num' }], key: o.key }; } },
+    { id: 't3', title: 'Perplexity of two sentences', marks: 1.5, gen(r, B) {
+      const o = shOut([L10_BASE(B), `
+def perplexity(sentence, smooth):
+    ws = sentence.split()
+    logp = 0.0
+    for a, b in zip(ws[:-1], ws[1:]):
+        row = counts[idx[a]] + smooth          # add-smooth: unseen pairs keep a small count
+        logp += np.log(row[idx[b]] / row.sum())
+    return np.exp(-logp / (len(ws) - 1))
+
+smooth = ${B.smooth}
+s1 = "${B.s1}"     # a sentence from your text
+s2 = "${B.snew}"     # a sentence that is NOT in your text (it reuses word pairs from your text)`,
+        ['perplexity of s1:', 'round(perplexity(s1, smooth), 2)', 'ppl_s1'], ['perplexity of s2:', 'round(perplexity(s2, smooth), 2)', 'ppl_s2'],
+        ['lower perplexity (1 = s1, 2 = s2):', '1 if perplexity(s1, smooth) < perplexity(s2, smooth) else 2', 'lower']]);
+      return { html: `<p>Score the two sentences with smoothing <b>${B.smooth}</b>: <b>s1 = "${B.s1}"</b> (it is in your text) and <b>s2 = "${B.snew}"</b> (it is not). Report both perplexities and say which one is lower. Is the lower one always the true one?</p>`, code: o.code,
+        fields: [{ k: 'p1', label: 'Perplexity of s1 (2 decimals)', type: 'num' }, { k: 'p2', label: 'Perplexity of s2 (2 decimals)', type: 'num' }, { k: 'low', label: 'Which is lower (s1 or s2)? One sentence: does lower mean true?', type: 'long' }], key: o.key }; } },
+    { id: 't4', title: 'Sampling with your temperature', marks: 1.5, gen(r, B) {
+      const o = shOut([L10_BASE(B), L10_GEN, 'p = probs[idx["the"]]',
+        [`P(${B.top} | the) at T = ${B.T}:`, `round(adjust(p, ${B.T})[idx["${B.top}"]], 2)`, 'p_top_T'],
+        ['generated:', `generate("${B.start}", ${B.len}, T=${B.T}, seed=${B.seed})`, 'text']]);
+      return { html: `<p>Your temperature is <b>T = ${B.T}</b> and your seed is <b>${B.seed}</b>. Report the new probability of "${B.top}" after "the" at this temperature (it was the top word in task 2), and the text that <code>generate</code> writes, starting from "${B.start}" with ${B.len} more words. Did the temperature make "${B.top}" more or less likely?</p>`, code: o.code,
+        fields: [{ k: 'pt', label: `P(${B.top} | the) at T = ${B.T} (2 decimals)`, type: 'num' }, { k: 'txt', label: 'The generated text', type: 'text' }, { k: 'ml', label: 'More or less likely than in task 2?', type: 'text' }], key: o.key }; } },
+    { id: 'c1', kind: 'challenge', title: 'Temperature and variety', marks: 2, gen(r, B) {
+      const head = L10_BASE(B) + L10_GEN + `\n# Challenge: for each temperature, generate 20 texts (seeds 0 to 19) from "${B.start}" with ${B.len} more words\n# and count how many DIFFERENT texts you get.\n`;
+      const code = head + `for T in [0.2, ${B.Th}]:\n    texts = set()\n    for s in range(20):\n        pass   # YOUR CODE HERE: make one text with temperature T and seed s, add it to texts\n    print(f"T = {T}: {len(texts)} different texts out of 20")\nprint("top-k = 1:", generate("${B.start}", ${B.len}, k=1, seed=${B.cseed}))\n`;
+      const key = head + `for T in [0.2, ${B.Th}]:\n    texts = set(generate("${B.start}", ${B.len}, T=T, seed=s) for s in range(20))\n    print("ANS different_T" + str(T), len(texts))\nprint("ANS topk1", generate("${B.start}", ${B.len}, k=1, seed=${B.cseed}))\n`;
+      return { html: `<p>Finish the loop: for <b>T = 0.2</b> and for <b>T = ${B.Th}</b>, generate 20 texts (seeds 0 to 19) and count how many are different. Then run the top-k = 1 line (seed ${B.cseed}). Report the two counts and the top-k = 1 text, and explain with your numbers what temperature and top-k = 1 do.</p>`, code,
+        fields: [{ k: 'lo', label: 'Different texts at T = 0.2', type: 'num' }, { k: 'hi', label: `Different texts at T = ${B.Th}`, type: 'num' }, { k: 'k1', label: 'The top-k = 1 text', type: 'text' }, { k: 'why', label: 'Your explanation (two sentences)', type: 'long' }, { k: 'code', label: 'Your finished loop (paste your code)', type: 'code' }], key,
+        note: 'Explanation: low temperature (and top-k = 1, which is greedy) almost always picks the most likely word, so the texts repeat and often loop; high temperature flattens the probabilities, so more different texts appear. Accept any honest reading of the student\'s own counts.' }; } },
+    { id: 'c2', kind: 'challenge', title: 'From bigram to trigram', marks: 2, gen(r, B) {
+      const [v] = B.ctx.split(' ');
+      const head = L10_BASE(B) + `\n# Challenge: a TRIGRAM model looks at the two previous words.\n# tri[(a, b)] is a dictionary: next word -> count.\ntri = {}\nfor a, b, c in zip(words[:-2], words[1:-1], words[2:]):\n`;
+      const tail = `row = tri.get(("${v}", "the"), {})\n`;
+      const code = head + `    pass   # YOUR CODE HERE: add 1 to the count of c after the pair (a, b)\nprint("number of different pairs (contexts):", len(tri))\n${tail}if row:\n    best = max(row, key=row.get)\n    print('most likely word after "${v} the":', best, round(row[best] / sum(row.values()), 2))\nelse:\n    print("tri is still empty: write the counting line first")\nprint('bigram model, most likely word after "the":', vocab[int(np.argmax(probs[idx["the"]]))])\n`;
+      const key = head + `    tri.setdefault((a, b), {})\n    tri[(a, b)][c] = tri[(a, b)].get(c, 0) + 1\nprint("ANS contexts", len(tri))\n${tail}best = max(row, key=row.get)\nprint("ANS word", best)\nprint("ANS p", round(row[best] / sum(row.values()), 2))\n`;
+      return { html: `<p>Write the missing counting line so that <code>tri</code> counts every word after every <b>pair</b> of words. Report the number of different pairs (contexts), the most likely word after <b>"${v} the"</b> and its probability. Compare with the bigram answer of task 2 and explain in one or two sentences what the longer context changes.</p>`, code,
+        fields: [{ k: 'ctx', label: 'Number of different pairs (contexts)', type: 'num' }, { k: 'w', label: `Most likely word after "${v} the"`, type: 'text' }, { k: 'p', label: 'Its probability (2 decimals)', type: 'num' }, { k: 'why', label: 'What does the longer context change?', type: 'long' }, { k: 'code', label: 'Your counting line(s) (paste your code)', type: 'code' }], key,
+        note: 'Explanation: with two previous words the model sees fewer examples per context (fewer counts), so its prediction can change and is often more confident; it needs more data for the same coverage. Accept an honest comparison of the student\'s own numbers.' }; } }
+  ]
+};
+
 Course.lecture({
   id: 'lab10', num: 10, week: 10, kind: 'lab', title: 'Language models in practice',
   lede: 'Build the smallest possible language model from a tiny text: count word pairs, turn them into probabilities, and write new sentences with temperature and top-k. Then see why a fluent sentence is not the same as a true one.',
@@ -170,6 +298,10 @@ Course.lecture({
       { note: '<b>Expected output.</b><br><code>the cat sat on the mat .   P = 8.2e-04   perplexity =  3.27</code><br><code>the dog ate the fish .     P = 3.0e-03   perplexity =  3.20</code><br><code>the fish ate the dog .     P = 2.7e-04   perplexity =  5.18</code><br><code>mat the on sat cat the .   P = 2.1e-11   perplexity = 60.39</code>' },
       { quiz: { q: '"the dog ate the fish ." is <b>not</b> in the training text (the text says the cat ate the fish, and the dog ate the bone). Why does it get a <i>higher</i> probability than "the cat sat on the mat .", which is in the text?', options: ['The model scores how word pairs fit together, not whether the whole sentence is true', 'Because of a bug in the counts', 'Because shorter sentences are always true', 'Because the temperature was too high'], correct: 0, why: 'Every pair in it (the dog, dog ate, ate the, the fish) is common in the text, so the sentence looks very likely. Likely is not the same as true. Large language models hallucinate for the same basic reason, just at a much larger scale.' } },
       { deeper: { title: 'Answers to the tasks', html: '<p>(1) T = 0.2 gives almost the same sentence for every seed (it is nearly greedy); T = 1.0 changes a lot. (2) With k = 2, only the two most likely next words survive at each step: after "the" only dog and cat remain. (3) Your words appear only after the words that came before them in your sentence: a bigram model can only reuse pairs it has seen.</p>' } }
+    ] }
+    ,{ id: 'sheet', title: 'Your personal lab sheet (hand in)', blocks: [
+      { html: '<p>This is the part you <b>hand in</b>. Your teacher gets your file from Moodle and compares it with the answers generated from your ID.</p>' },
+      { labsheet: SHEET10 }
     ] }
   ]
 });

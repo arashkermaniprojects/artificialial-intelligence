@@ -78,6 +78,165 @@ const exPredict = {
   }
 };
 
+/* ---------- personal lab sheet (hand in): a personal data set generated from the student ID ---------- */
+const keyOf = (code, reps) => reps.reduce((c, [a, b]) => { if (!c.includes(a)) throw new Error('sheet key: line not found: ' + a); return c.replace(a, b); }, code);
+const PY5_DATA = B => `import numpy as np
+
+# your data: 3 features between 0 and 1 (two decimals); the class depends on some of them, with ${Math.round(B.noise * 100)}% noise
+np.random.seed(${B.ds})
+def make(n):
+    X = np.round(np.random.rand(n, 3), 2)
+    y = (X[:, ${B.f1}] + ${B.w} * X[:, ${B.f2}] > ${B.t}).astype(int)
+    flip = np.random.rand(n) < ${B.noise}
+    y[flip] = 1 - y[flip]
+    return X, y
+Xtr, ytr = make(${B.ntr})       # training set
+Xte, yte = make(100)       # test set
+`;
+const PY5_TREE = String.raw`
+def entropy(y):
+    if len(y) == 0: return 0.0
+    p = y.mean()
+    return 0.0 if p in (0, 1) else -(p * np.log2(p) + (1 - p) * np.log2(1 - p))
+
+def info_gain(labels, left_mask):
+    L, R = labels[left_mask], labels[~left_mask]
+    after = len(L) / len(labels) * entropy(L) + len(R) / len(labels) * entropy(R)
+    return entropy(labels) - after
+
+def best_split(X, y):
+    """Try every feature and every threshold; return the split with the largest information gain."""
+    best = (0.0, None, None)                       # (gain, feature, threshold)
+    for f in range(X.shape[1]):
+        values = np.unique(X[:, f])
+        for t in (values[:-1] + values[1:]) / 2:   # midpoints between neighbours
+            left = X[:, f] < t
+            after = left.mean() * entropy(y[left]) + (~left).mean() * entropy(y[~left])
+            gain = entropy(y) - after
+            if gain > best[0] + 1e-12:
+                best = (gain, f, t)
+    return best
+
+def grow(X, y, depth, max_depth):
+    gain, f, t = best_split(X, y)
+    if depth == max_depth or f is None or gain < 1e-9:
+        return int(round(y.mean())) if len(y) else 0
+    left = X[:, f] < t
+    return (f, t, grow(X[left], y[left], depth + 1, max_depth), grow(X[~left], y[~left], depth + 1, max_depth))
+
+def predict(node, x):
+    while isinstance(node, tuple):
+        f, t, L, R = node
+        node = L if x[f] < t else R
+    return node
+
+def leaves(node):
+    return 1 if not isinstance(node, tuple) else leaves(node[2]) + leaves(node[3])
+
+acc = lambda T, X, y: float(np.mean([predict(T, x) == t for x, t in zip(X, y)]))
+`;
+const SHEET5 = {
+  title: 'My personal lab sheet: decision trees', marks: 10,
+  intro: 'Your data set is <b>personal</b>: its seed, its rule, its noise and its size are generated from your student ID, so your answers differ from those of your classmates. Run each code cell (press ▶ Run), copy the results into the answer boxes, add a screenshot of your results if you like, and finally download your sheet as <b>Word</b> or <b>PDF</b> and upload it to Moodle.',
+  base(r) {
+    const ds = r.int(1, 999), f1 = r.int(0, 2), f2 = r.pick([0, 1, 2].filter(f => f !== f1)), w = r.pick([0.3, 0.5]);
+    const t = Math.round(((1 + w) / 2 + r.pick([-0.1, 0, 0.1])) * 100) / 100, noise = r.pick([0.05, 0.1, 0.15]), ntr = r.pick([60, 70, 75]);
+    return { ds, f1, f2, w, t, noise, ntr, sf: r.int(0, 2), st: r.pick([0.3, 0.4, 0.5, 0.6, 0.7]), depth: r.pick([2, 3]), min: r.pick([8, 10, 12, 15]) };
+  },
+  tasks: [
+    { id: 't1', title: 'Entropy of your training labels', marks: 1.5, gen(r, B) {
+      const code = PY5_DATA(B) + PY5_TREE + `
+print("training examples:", len(ytr))
+print("class 1:", int(ytr.sum()), " class 0:", int(len(ytr) - ytr.sum()))
+print("entropy:", round(entropy(ytr), 3))
+`;
+      return { html: `<p>Your training set has <b>${B.ntr}</b> examples with three features x0, x1, x2. Count the examples of each class and compute the entropy of the training labels (3 decimals). Check the entropy with the formula using your two counts.</p>`, code,
+        fields: [{ k: 'n1', label: 'Examples of class 1', type: 'num' }, { k: 'n0', label: 'Examples of class 0', type: 'num' }, { k: 'h', label: 'Entropy (3 decimals)', type: 'num' }],
+        key: keyOf(code, [['print("class 1:", int(ytr.sum()), " class 0:", int(len(ytr) - ytr.sum()))', 'print("ANS class1", int(ytr.sum())); print("ANS class0", int(len(ytr) - ytr.sum()))'], ['print("entropy:"', 'print("ANS entropy"']]) }; } },
+    { id: 't2', title: 'The gain of one question', marks: 1.5, gen(r, B) {
+      const code = PY5_DATA(B) + PY5_TREE + `
+mask = Xtr[:, ${B.sf}] < ${B.st}             # your question: is x${B.sf} < ${B.st} ?
+print("left:", int(mask.sum()), "examples   right:", int((~mask).sum()), "examples")
+print("entropy left:", round(entropy(ytr[mask]), 3), "  entropy right:", round(entropy(ytr[~mask]), 3))
+print("information gain:", round(info_gain(ytr, mask), 3))
+`;
+      return { html: `<p>Your question is <b>"is x${B.sf} &lt; ${B.st}?"</b>. Run the cell. How many training examples go to the left, what are the entropies of the two children, and what is the information gain of this question?</p>`, code,
+        fields: [{ k: 'nl', label: 'Examples going left', type: 'num' }, { k: 'hl', label: 'Entropy left (3 decimals)', type: 'num' }, { k: 'hr', label: 'Entropy right (3 decimals)', type: 'num' }, { k: 'g', label: 'Information gain (3 decimals)', type: 'num' }],
+        key: keyOf(code, [['print("left:", int(mask.sum()), "examples   right:", int((~mask).sum()), "examples")', 'print("ANS left", int(mask.sum()))'], ['print("entropy left:", round(entropy(ytr[mask]), 3), "  entropy right:", round(entropy(ytr[~mask]), 3))', 'print("ANS entropy_left", round(entropy(ytr[mask]), 3)); print("ANS entropy_right", round(entropy(ytr[~mask]), 3))'], ['print("information gain:"', 'print("ANS gain"']]) }; } },
+    { id: 't3', title: 'The best question', marks: 1.5, gen(r, B) {
+      const code = PY5_DATA(B) + PY5_TREE + `
+gain, f, t = best_split(Xtr, ytr)
+print("best feature: x" + str(f))
+print("best threshold:", round(float(t), 3))
+print("gain:", round(gain, 3))
+`;
+      return { html: `<p>Let <code>best_split</code> try every feature and every threshold on your training set. Which feature and which threshold does it choose for the first question, and what is its gain? Is it better than your question in Task 2?</p>`, code,
+        fields: [{ k: 'f', label: 'Best feature (x0, x1 or x2)', type: 'text' }, { k: 't', label: 'Best threshold (3 decimals)', type: 'num' }, { k: 'g', label: 'Gain (3 decimals)', type: 'num' }],
+        key: keyOf(code, [['print("best feature: x" + str(f))', 'print("ANS feature x" + str(f))'], ['print("best threshold:"', 'print("ANS threshold"'], ['print("gain:"', 'print("ANS gain"']]) }; } },
+    { id: 't4', title: `Grow a small tree`, marks: 1.5, gen(r, B) {
+      const code = PY5_DATA(B) + PY5_TREE + `
+def show(node, indent=""):
+    if not isinstance(node, tuple):
+        print(indent + "-> class", node); return
+    f, t, L, R = node
+    print(f"{indent}if x{f} < {t:.3f}:"); show(L, indent + "    ")
+    print(f"{indent}else:");               show(R, indent + "    ")
+
+tree = grow(Xtr, ytr, 0, max_depth=${B.depth})
+show(tree)
+print("leaves:", leaves(tree))
+print("train accuracy:", round(acc(tree, Xtr, ytr), 3))
+print("test accuracy:", round(acc(tree, Xte, yte), 3))
+`;
+      return { html: `<p>Grow a tree of maximum depth <b>${B.depth}</b> on your training set and print it. Report the number of leaves, the training accuracy and the test accuracy.</p>`, code,
+        fields: [{ k: 'leaves', label: 'Number of leaves', type: 'num' }, { k: 'tr', label: 'Train accuracy (3 decimals)', type: 'num' }, { k: 'te', label: 'Test accuracy (3 decimals)', type: 'num' }],
+        key: keyOf(code, [['print("leaves:"', 'print("ANS leaves"'], ['print("train accuracy:"', 'print("ANS train_acc"'], ['print("test accuracy:"', 'print("ANS test_acc"']]) }; } },
+    { id: 'c1', kind: 'challenge', title: 'Which depth would you choose?', marks: 2, gen(r, B) {
+      const code = PY5_DATA(B) + PY5_TREE + `
+print("depth  leaves  train   test")
+for d in range(1, 7):
+    T = grow(Xtr, ytr, 0, max_depth=d)
+    print(f"{d:5d}  {leaves(T):6d}  {acc(T, Xtr, ytr):.3f}  {acc(T, Xte, yte):.3f}")
+`;
+      const keycode = PY5_DATA(B) + PY5_TREE + `
+res = []
+for d in range(1, 7):
+    T = grow(Xtr, ytr, 0, max_depth=d)
+    res.append((acc(T, Xtr, ytr), acc(T, Xte, yte)))
+best = max(range(6), key=lambda i: (round(res[i][1], 3), -i))
+print("ANS best_depth", best + 1)
+print("ANS best_test_acc", round(res[best][1], 3))
+print("ANS train_acc_depth6", round(res[5][0], 3))
+print("ANS test_acc_depth6", round(res[5][1], 3))
+`;
+      return { html: '<p>Grow trees of depth 1 to 6 on your data and print the table. Which depth gives the highest test accuracy (if two depths are equal, take the smaller one)? Report that depth, its test accuracy, and the train and test accuracy at depth 6. Explain in two sentences, with your own numbers, whether your trees overfit, and why choosing the depth with the test set is not fair in a real project.</p>', code,
+        fields: [{ k: 'd', label: 'Depth with the highest test accuracy', type: 'num' }, { k: 'te', label: 'Its test accuracy', type: 'num' }, { k: 'tr6', label: 'Train accuracy at depth 6', type: 'num' }, { k: 'te6', label: 'Test accuracy at depth 6', type: 'num' }, { k: 'why', label: 'Your explanation (two sentences)', type: 'long' }],
+        key: keycode, note: 'Overfitting shows as train accuracy rising while test accuracy stops rising or falls. The depth should be chosen on a separate validation set (or with cross-validation), not on the test set.' }; } },
+    { id: 'c2', kind: 'challenge', title: 'Stop splitting small nodes', marks: 2, gen(r, B) {
+      const code = PY5_DATA(B) + PY5_TREE + `
+MIN_SIZE = ${B.min}
+
+def grow_min(X, y, depth, max_depth):
+    # YOUR CODE HERE: if the node has fewer than MIN_SIZE examples,
+    # return a leaf with the majority class:  int(round(y.mean()))
+    gain, f, t = best_split(X, y)
+    if depth == max_depth or f is None or gain < 1e-9:
+        return int(round(y.mean())) if len(y) else 0
+    left = X[:, f] < t
+    return (f, t, grow_min(X[left], y[left], depth + 1, max_depth), grow_min(X[~left], y[~left], depth + 1, max_depth))
+
+T_full = grow(Xtr, ytr, 0, max_depth=6)
+T_min = grow_min(Xtr, ytr, 0, max_depth=6)
+print("without the rule: leaves", leaves(T_full), " test accuracy", round(acc(T_full, Xte, yte), 3))
+print("with MIN_SIZE =", MIN_SIZE, ": leaves", leaves(T_min), " test accuracy", round(acc(T_min, Xte, yte), 3))
+`;
+      return { html: `<p>A common way to stop overfitting: never split a node that has fewer than <b>${B.min}</b> training examples. Add this rule at the top of <code>grow_min</code> and grow a tree of depth 6 with it. Report the number of leaves and the test accuracy with the rule. Compare with the tree without the rule and explain the difference in one or two sentences. Paste your new lines into the last box.</p>`, code,
+        fields: [{ k: 'leaves', label: 'Leaves with the rule', type: 'num' }, { k: 'te', label: 'Test accuracy with the rule (3 decimals)', type: 'num' }, { k: 'why', label: 'Comparison with the tree without the rule', type: 'long' }, { k: 'code', label: 'Your new lines', type: 'code' }],
+        key: keyOf(code, [['    # YOUR CODE HERE: if the node has fewer than MIN_SIZE examples,\n    # return a leaf with the majority class:  int(round(y.mean()))\n', '    if len(y) < MIN_SIZE:\n        return int(round(y.mean()))\n'], ['print("without the rule: leaves", leaves(T_full), " test accuracy", round(acc(T_full, Xte, yte), 3))', 'print("ANS full_leaves", leaves(T_full)); print("ANS full_test_acc", round(acc(T_full, Xte, yte), 3))'], ['print("with MIN_SIZE =", MIN_SIZE, ": leaves", leaves(T_min), " test accuracy", round(acc(T_min, Xte, yte), 3))', 'print("ANS min_leaves", leaves(T_min)); print("ANS min_test_acc", round(acc(T_min, Xte, yte), 3))']]),
+        note: 'The rule gives fewer leaves (a simpler tree). The test accuracy often stays the same or rises because the tree no longer memorises single noisy examples; it may also drop slightly. Accept an honest comparison with the numbers.' }; } }
+  ]
+};
+
 Course.lecture({
   id: 'lab05', num: 5, week: 5, kind: 'lab', title: 'Decision trees from scratch',
   lede: 'Compute entropy, find the best question by trying every threshold, grow a whole tree with a short recursive function, and watch it overfit as it gets deeper.',
@@ -190,6 +349,10 @@ for d in range(1, 9):
       { exercise: exEnt },
       { exercise: exGain },
       { exercise: exPredict }
+    ] }
+    ,{ id: 'sheet', title: 'Your personal lab sheet (hand in)', blocks: [
+      { html: '<p>This is the part you <b>hand in</b>. Your teacher gets your file from Moodle and compares it with the answers generated from your ID.</p>' },
+      { labsheet: SHEET5 }
     ] }
   ]
 });

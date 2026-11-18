@@ -68,6 +68,173 @@ const exForget = {
   }
 };
 
+/* ---------- personal lab sheet (hand in): tasks and challenges generated from the student ID ---------- */
+// The generator replays the influence and memory loops in JavaScript (same IEEE arithmetic) so no answer sits on the 0.01 boundary.
+const firstBelow = (seq, th, tolRel) => { for (let t = 0; t < seq.length; t++) { const q = Math.abs(seq[t]) / th; if (Math.abs(q - 1) < tolRel) return -1; if (q < 1) return t + 1; } return 0; };
+const inflJS = (w, u, T, tanh) => { let h = 0, d = 0; const out = []; for (let t = 0; t < T; t++) { const x = t === 0 ? 1 : 0, a = w * h + u * x; h = tanh ? Math.tanh(a) : a; const s = tanh ? 1 - h ** 2 : 1; d = t === 0 ? u * s : w * s * d; out.push(d); } return out; };
+const PY_INFL = String.raw`import numpy as np
+
+def influence(w, u=1.0, T=40, act="tanh"):
+    """How much the FIRST input still moves the state at each step: d h_t / d x_1."""
+    h, d, out = 0.0, 0.0, []
+    for t in range(T):
+        x = 1.0 if t == 0 else 0.0
+        a = w * h + u * x
+        h = np.tanh(a) if act == "tanh" else a
+        slope = 1 - h ** 2 if act == "tanh" else 1.0
+        d = u * slope if t == 0 else w * slope * d
+        out.append(d)
+    return np.array(out)
+
+def first_step_below(inf, limit=0.01):
+    small = np.where(np.abs(inf) < limit)[0]
+    return int(small[0]) + 1 if len(small) else None     # steps are counted from 1
+`;
+const PY_RNN = String.raw`import numpy as np
+
+def make_task(n, T, rng):
+    """Remember the FIRST number (+1 or -1) of a noisy sequence and report it at the end."""
+    first = rng.choice([-1.0, 1.0], size=n)
+    xs = 0.5 * rng.standard_normal((n, T))
+    xs[:, 0] = first
+    return xs, first
+
+def train_memory(T, H=8, epochs=300, lr=0.3, seed=0, report=False):
+    r = np.random.default_rng(seed)
+    W = r.standard_normal((H, H)) * 0.5 / np.sqrt(H)
+    U, b, v = r.standard_normal(H), np.zeros(H), r.standard_normal(H) * 0.5
+    xs, y = make_task(256, T, r)
+    for ep in range(epochs):
+        hs = [np.zeros((len(y), H))]
+        for t in range(T):                                  # forward through time
+            hs.append(np.tanh(hs[-1] @ W.T + np.outer(xs[:, t], U) + b))
+        yhat = hs[-1] @ v
+        dy = 2 * (yhat - y) / len(y)
+        gv = hs[-1].T @ dy
+        dh = np.outer(dy, v)
+        gW, gU, gb, norms = np.zeros_like(W), np.zeros_like(U), np.zeros_like(b), []
+        for t in range(T, 0, -1):                           # backpropagation through time
+            da = dh * (1 - hs[t] ** 2)
+            norms.append(np.abs(da).mean())
+            gW += da.T @ hs[t - 1]
+            gU += da.T @ xs[:, t - 1]
+            gb += da.sum(0)
+            dh = da @ W
+        if report and ep == 0:
+            print(f"gradient size in the first epoch: at step {T}: {norms[0]:.2e}   at step 1: {norms[-1]:.2e}   ratio {norms[0] / norms[-1]:.3g}")
+        for p, g in ((W, gW), (U, gU), (b, gb), (v, gv)):
+            p -= lr * np.clip(g, -1, 1)
+    xt, yt = make_task(500, T, np.random.default_rng(seed + 1))
+    h = np.zeros((500, H))
+    for t in range(T):
+        h = np.tanh(h @ W.T + np.outer(xt[:, t], U) + b)
+    return int((np.sign(h @ v) == yt).sum())               # test sequences right, out of 500
+`;
+const SHEET9 = {
+  title: 'My personal lab sheet: recurrent networks', marks: 10,
+  intro: 'The numbers below are <b>personal</b>: they are generated from your student ID, so your weights, your input sequence, your seeds and your answers differ from those of your classmates. Every cell is complete on its own. Run each code cell (press ▶ Run), copy the results into the answer boxes, add a screenshot if you like, and finally download your sheet as <b>Word</b> or <b>PDF</b> and upload it to Moodle.',
+  base(r) {
+    const w = r.pick([0.5, 0.6, 0.7, 0.8, 0.9, 1.1, 1.2]), u = r.pick([0.5, 1, 1.5, 2]);
+    const xs = [r.pick([-1, 1, 2])].concat(Array.from({ length: 5 }, () => r.int(-1, 1)));
+    let wl, sl; do { wl = r.pick(Array.from({ length: 22 }, (_, i) => Math.round((0.5 + 0.02 * i) * 100) / 100)); sl = firstBelow(inflJS(wl, 1, 40, false), 0.01, 1e-9); } while (sl <= 0);
+    const wbig = r.pick([1.05, 1.1, 1.15, 1.2, 1.25, 1.3, 1.4, 1.5]);
+    let wt, ut, st; do { wt = r.pick(Array.from({ length: 26 }, (_, i) => Math.round((1.5 + 0.1 * i) * 10) / 10)); ut = r.pick([0.8, 1, 1.2, 1.5, 2]); st = firstBelow(inflJS(wt, ut, 40, true), 0.01, 1e-6); } while (st <= 0);
+    const Ts = r.int(3, 5), H = r.pick([4, 6, 8]), seed = r.int(0, 99), Tl = r.pick([15, 18, 20]);
+    let fs, lim, ok; do { fs = r.shuffle([0.5, 0.6, 0.7, 0.8, 0.9, 0.95, 0.99]).slice(0, 3).sort((a, b) => a - b); lim = r.pick([0.1, 0.05, 0.01]);
+      ok = fs.every(f => { let c = 1; for (let t = 1; t <= 1000; t++) { c = f * c + 0.0 * 0.0; const q = c / lim; if (Math.abs(q - 1) < 1e-9) return false; if (q < 1) return true; } return false; }); } while (!ok);
+    return { w, u, xs, wl, wbig, wt, ut, Ts, H, seed, Tl, fs, lim };
+  },
+  tasks: [
+    { id: 't1', title: 'Hidden states of your cell', marks: 1.5, gen(r, B) {
+      const code = `import numpy as np
+
+w, u = ${B.w}, ${B.u}               # your recurrent weight and input weight
+xs = ${JSON.stringify(B.xs)}       # your input sequence
+h = 0.0
+for t, x in enumerate(xs, start=1):
+    h = np.tanh(w * h + u * x)
+    print(f"step {t}: input {x:2d}  ->  hidden state {h:.4f}")
+`;
+      const key = code.replace('    print(f"step {t}: input {x:2d}  ->  hidden state {h:.4f}")', '    print("ANS step", t, f"{h:.4f}")');
+      return { html: `<p>Your cell is <b>h = tanh(${B.w}·h + ${B.u}·x)</b>, starting from h = 0, and your input sequence is <b>${B.xs.join(', ')}</b>. Run it and report the hidden state at steps 2, 4 and 6. Check step 1 by hand: write tanh of which number?</p>`, code,
+        fields: [{ k: 'h1', label: 'Step 1 by hand: tanh( ? ) = ?', type: 'text' }, { k: 'h2', label: 'Hidden state at step 2 (4 decimals)', type: 'num' }, { k: 'h4', label: 'Hidden state at step 4 (4 decimals)', type: 'num' }, { k: 'h6', label: 'Hidden state at step 6 (4 decimals)', type: 'num' }], key,
+        note: `Step 1 by hand: tanh(${B.u}·${B.xs[0]}) = tanh(${B.u * B.xs[0]}).` }; } },
+    { id: 't2', title: 'When does the signal vanish?', marks: 1.5, gen(r, B) {
+      const code = PY_INFL + `
+for w in [${B.wl}, 1.0, ${B.wbig}]:
+    inf = influence(w, act="linear")
+    print(f"linear, w = {w}: step 5 {inf[4]:.4g}   step 10 {inf[9]:.4g}   first step below 0.01: {first_step_below(inf)}")
+`;
+      const key = code.replace('    print(f"linear, w = {w}: step 5 {inf[4]:.4g}   step 10 {inf[9]:.4g}   first step below 0.01: {first_step_below(inf)}")', '    print("ANS w", w, "step5", f"{inf[4]:.4g}", "step10", f"{inf[9]:.4g}", "first_below_0.01", first_step_below(inf))');
+      return { html: `<p>For the <b>linear</b> cell (u = 1) the influence of the first input on step t is w to the power (t − 1). Run the cell for your weights <b>${B.wl}</b>, 1.0 and <b>${B.wbig}</b>. For each weight report the influence at step 10 and the first step where it is below 0.01 (None if never in 40 steps). Check the step-10 value for w = ${B.wl} by hand with a power.</p>`, code,
+        fields: [{ k: 'a', label: `w = ${B.wl}: influence at step 10, first step below 0.01`, type: 'text' }, { k: 'b', label: 'w = 1.0: influence at step 10, first step below 0.01', type: 'text' }, { k: 'c', label: `w = ${B.wbig}: influence at step 10, first step below 0.01`, type: 'text' }, { k: 'hand', label: `Hand check: ${B.wl} to the power ? = ?`, type: 'text' }], key,
+        note: `Hand check: ${B.wl}^9 = ${(+Math.pow(B.wl, 9).toPrecision(4))}.` }; } },
+    { id: 't3', title: 'A big weight with tanh', marks: 1.5, gen(r, B) {
+      const code = PY_INFL + `
+w, u = ${B.wt}, ${B.ut}
+inf = influence(w, u=u, act="tanh")
+h = 0.0
+for t in range(5):
+    h = np.tanh(w * h + u * (1.0 if t == 0 else 0.0))
+    print(f"step {t + 1}: hidden state {h:.4f}   influence {inf[t]:.4g}")
+print("first step below 0.01:", first_step_below(inf))
+`;
+      const key = code.replace('    print(f"step {t + 1}: hidden state {h:.4f}   influence {inf[t]:.4g}")', '    print("ANS step", t + 1, "h", f"{h:.4f}", "influence", f"{inf[t]:.4g}")').replace('print("first step below 0.01:",', 'print("ANS first_below_0.01",');
+      return { html: `<p>Now a <b>tanh</b> cell with a big recurrent weight <b>w = ${B.wt}</b> and input weight <b>u = ${B.ut}</b>, input 1 then zeros. Report the hidden state at step 5, the influence at step 1 and at step 5, and the first step where the influence is below 0.01. In one sentence: the state stays large, so why does the influence vanish?</p>`, code,
+        fields: [{ k: 'h5', label: 'Hidden state at step 5 (4 decimals)', type: 'num' }, { k: 'i1', label: 'Influence at step 1', type: 'num' }, { k: 'i5', label: 'Influence at step 5', type: 'num' }, { k: 'st', label: 'First step below 0.01', type: 'num' }, { k: 'why', label: 'Why does it vanish? (one sentence)', type: 'long' }], key,
+        note: 'Why: the state is near +1 or −1, where the slope of tanh (1 − h²) is almost 0, and every step multiplies the influence by w times that small slope.' }; } },
+    { id: 't4', title: 'Train a tiny RNN on a short sequence', marks: 1.5, gen(r, B) {
+      const code = PY_RNN + `
+right = train_memory(${B.Ts}, H=${B.H}, seed=${B.seed}, report=True)
+print(f"sequence length ${B.Ts}, hidden ${B.H}, seed ${B.seed}: test sequences right {right} of 500")
+`;
+      const key = PY_RNN.replace('print(f"gradient size in the first epoch: at step {T}: {norms[0]:.2e}   at step 1: {norms[-1]:.2e}   ratio {norms[0] / norms[-1]:.3g}")', 'print("ANS grad_last_step", f"{norms[0]:.2e}"); print("ANS grad_step1", f"{norms[-1]:.2e}"); print("ANS ratio", f"{norms[0] / norms[-1]:.3g}")') + `
+print("ANS test_right", train_memory(${B.Ts}, H=${B.H}, seed=${B.seed}, report=True))
+`;
+      return { html: `<p>Train the small RNN of the lab (hidden size <b>${B.H}</b>, seed <b>${B.seed}</b>, 300 epochs) to remember the first number of a sequence of length <b>${B.Ts}</b>. Report the gradient size at the last step and at step 1 in the first epoch, their ratio, and how many of the 500 test sequences it gets right.</p>`, code,
+        fields: [{ k: 'gT', label: `Gradient size at step ${B.Ts}`, type: 'num' }, { k: 'g1', label: 'Gradient size at step 1', type: 'num' }, { k: 'ratio', label: 'Ratio', type: 'num' }, { k: 'acc', label: 'Test sequences right (out of 500)', type: 'num' }], key,
+        note: 'Gradient sizes are from the first epoch, so they must match closely. The test count may differ by a few between numpy versions; accept within 5.' }; } },
+    { id: 'c1', kind: 'challenge', title: 'How long does an LSTM memory last?', marks: 2, gen(r, B) {
+      const head = `import numpy as np
+
+def lstm_step(c_prev, f, i, g, o):
+    c = f * c_prev + i * g
+    h = o * np.tanh(c)
+    return c, h
+
+limit = ${B.lim}
+for f in ${JSON.stringify(B.fs)}:            # your three forget gates
+    c = 1.0
+    steps = None
+    for t in range(1, 1001):
+        c, _ = lstm_step(c, f=f, i=0.0, g=0.0, o=1.0)
+`;
+      const code = head + `        # YOUR CODE HERE: when c is below limit, save t in steps and stop (break)
+    print(f"forget gate {f}: memory below {limit} after {steps} steps")
+`;
+      const key = head + `        if c < limit:
+            steps = t
+            break
+    print("ANS forget_gate", f, "steps", steps)
+`;
+      return { html: `<p>The memory of an LSTM starts at c = 1, the input gate is 0, and the forget gate f is the same at every step. Finish the code: for your forget gates <b>${B.fs.join(', ')}</b>, count the steps until the memory is below <b>${B.lim}</b>. Report the three step counts. In two sentences: compare with the linear RNN of Task 2 (w = ${B.wl}), and say why the LSTM can keep a memory for a long time when it learns f close to 1.</p>`, code,
+        fields: [{ k: 'steps', label: 'Steps for each forget gate, for example 0.5: 4, 0.9: 22, ...', type: 'text' }, { k: 'why', label: 'Your explanation (two sentences)', type: 'long' }, { k: 'code', label: 'Your finished lines (paste your code)', type: 'code' }], key,
+        note: 'The memory is f to the power t, exactly like the linear RNN with w = f. The difference: the LSTM LEARNS its forget gate and can set it near 1 when it must remember, and there is no tanh slope on this path.' }; } },
+    { id: 'c2', kind: 'challenge', title: 'A long sequence', marks: 2, gen(r, B) {
+      const code = PY_RNN + `
+# Challenge: train the SAME network (hidden ${B.H}, seed ${B.seed}) on a long sequence of length ${B.Tl}.
+right = train_memory(${B.Tl}, H=${B.H}, seed=${B.seed}, report=True)
+print(f"sequence length ${B.Tl}: test sequences right {right} of 500")
+`;
+      const key = PY_RNN.replace('print(f"gradient size in the first epoch: at step {T}: {norms[0]:.2e}   at step 1: {norms[-1]:.2e}   ratio {norms[0] / norms[-1]:.3g}")', 'print("ANS grad_last_step", f"{norms[0]:.2e}"); print("ANS grad_step1", f"{norms[-1]:.2e}"); print("ANS ratio", f"{norms[0] / norms[-1]:.3g}")') + `
+print("ANS test_right", train_memory(${B.Tl}, H=${B.H}, seed=${B.seed}, report=True))
+`;
+      return { html: `<p>Train the same network as in Task 4 on a sequence of length <b>${B.Tl}</b>. Report the gradient ratio (last step to step 1) and the test sequences right. Compare with Task 4 in two or three sentences, using your numbers: how much smaller is the signal that reaches step 1, and what does that do to learning? If your long run still succeeds, say why that does not contradict the vanishing gradient (hint: slow, not impossible).</p>`, code,
+        fields: [{ k: 'ratio', label: 'Gradient ratio (last step / step 1)', type: 'num' }, { k: 'acc', label: 'Test sequences right (out of 500)', type: 'num' }, { k: 'why', label: 'Your comparison with Task 4 (two or three sentences)', type: 'long' }], key,
+        note: 'The ratio must match closely (first epoch). The test count depends on the seed: some long runs fail (about 250 of 500, guessing), some still succeed. Accept within 10 and mark the explanation by how well it uses the student\'s own two ratios.' }; } }
+  ]
+};
+
 Course.lecture({
   id: 'lab09', num: 9, week: 9, kind: 'lab', title: 'Recurrent networks',
   lede: 'Run a recurrent cell step by step, measure how the influence of the first input fades, train a tiny RNN with backpropagation through time and watch it fail on long sequences, then see the LSTM memory path that fixes it.',
@@ -182,6 +349,10 @@ for f in [1.0, 0.9, 0.5]:
       { note: '<b>Expected output.</b> <code>new cell state c = 2.20,  hidden state h = 0.585</code> (the lecture numbers), then after 20 steps: forget gate 1.0 keeps 1, forget gate 0.9 keeps 0.122, forget gate 0.5 keeps only 9.54e-07. The network <i>learns</i> its gates, so it can choose to hold a memory for as long as it needs.' },
       { exercise: exForget },
       { quiz: { q: 'In cell 3 the gradient at step 1 was about 100 000 times smaller than at step 15. What is the main consequence?', options: ['Learning to use the first input becomes extremely slow, so with the same training budget the long task fails', 'Training becomes faster', 'The network overfits', 'The test set becomes easier'], correct: 0, why: 'The first input is what the task is about, but almost no learning signal reaches it. After 400 epochs the long tasks stay near 0.5; much longer training can still get there on this easy task.' } }
+    ] }
+    ,{ id: 'sheet', title: 'Your personal lab sheet (hand in)', blocks: [
+      { html: '<p>This is the part you <b>hand in</b>. Your teacher gets your file from Moodle and compares it with the answers generated from your ID.</p>' },
+      { labsheet: SHEET9 }
     ] }
   ]
 });
