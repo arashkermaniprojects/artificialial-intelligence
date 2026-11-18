@@ -235,3 +235,11 @@ table.mini th{background:var(--card);font-weight:700}
 /* anchors and the sticky plan header: never hide the first row behind the bars */
 html{scroll-padding-top:112px}
 #plan,.plan{scroll-margin-top:112px}
+
+/* small screens: keep figure text readable; wide figures scroll sideways instead of shrinking */
+@media (max-width: 720px) {
+  .scene > .fig { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .scene > .fig svg { min-width: 640px; }
+  .scene.wide > .fig svg { min-width: 820px; }
+  .scene > .fig::after { content: "swipe sideways to see the whole picture"; display: block; font-size: 11px; color: var(--muted); text-align: center; padding: 4px 0 2px; }
+}
