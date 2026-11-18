@@ -20,7 +20,7 @@ const sceneHistory = {
     K.title(F, 'Seventy years of AI', 'the line shows how much excitement (and money) AI had at each time');
     F.line(50, AX, 870, AX, { stroke: 'var(--c-soft)', 'stroke-width': 1.6 });
     for (let y = 1940; y <= 2020; y += 10) { F.line(yr(y), AX - 4, yr(y), AX + 4, { stroke: 'var(--c-soft)' }); F.text(yr(y), AX - 12, String(y), { size: 10.5, cls: 'soft mono' }); }
-    F.s.win = [[1974, 1980], [1987, 1993]].map(([a, b]) => { const g = F.g({}); F.rect(yr(a), 70, yr(b) - yr(a), AX - 70, { fill: 'var(--accent2-bg)', rx: 6 }, g); F.text((yr(a) + yr(b)) / 2, 86, 'AI winter', { size: 11.5, weight: 700, fill: 'var(--accent2)' }, g); g.style.opacity = 0; return g; });
+    F.s.win = [[1974, 1980], [1987, 1993]].map(([a, b]) => { const g = F.g({}); F.rect(yr(a), 70, yr(b) - yr(a), AX - 70 - 30, { fill: 'var(--accent2-bg)', rx: 6 }, g); F.text((yr(a) + yr(b)) / 2, 86, 'AI winter', { size: 11.5, weight: 700, fill: 'var(--accent2)' }, g); g.style.opacity = 0; return g; });
     F.s.seg = [[1940, 1970], [1970, 1995], [1995, 2016], [2016, 2025]].map(([a, b]) => { const p = F.path(segPath(a, b), { stroke: 'var(--c-a)', 'stroke-width': 4, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' }); p.style.opacity = 0; return p; });
     F.s.ev = EVENTS.map(([y, txt, row]) => {
       const g = F.g({}), x = yr(y), ly = row === 'B' ? 352 : row === 'A2' ? 330 : 312;
@@ -29,7 +29,7 @@ const sceneHistory = {
       F.text(x, ly, y + '\n' + txt, { size: 11.5, weight: 650, lh: 14 }, g);
       g.style.opacity = 0; return g;
     });
-    F.s.now = K.callout(F, 640, 110, 'foundation models\nand AI agents', { tone: 'ok', w: 170 });
+    F.s.now = K.callout(F, 668, 118, 'foundation models\nand AI agents', { tone: 'ok', w: 170 });
   },
   steps: [
     { title: 'The beginning', say: ['In 1943 two scientists described the first mathematical model of a neuron.', 'In 1950 Alan Turing asked if machines can think, and in 1956 a summer workshop gave the field its name: artificial intelligence.'],

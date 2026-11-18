@@ -123,7 +123,7 @@ const sceneXor = {
   build(F) {
     K.title(F, 'XOR: output 1 when exactly one input is 1', 'one straight line is not enough');
     const A = F.s.A = axes(F, { x: 50, y: 80, w: 280, h: 280, xr: [-0.4, 1.4], yr: [-0.4, 1.4], tx: [0, 1], ty: [0, 1] });
-    F.text(28, 220, 'x2', { size: 12.5, cls: 'soft' }); F.text(190, 380, 'x1', { size: 12.5, cls: 'soft' });
+    F.text(28, 220, 'x2', { size: 12.5, cls: 'soft' }); F.text(190, 371, 'x1', { size: 12.5, cls: 'soft' });
     const cp = F.el('clipPath', { id: 'w06-xor-clip' }, F.defs); F.rect(50, 80, 280, 280, {}, cp);
     F.s.band = F.path(`M${A.X(-0.4)},${A.Y(0.9)} L${A.X(0.9)},${A.Y(-0.4)} L${A.X(1.4)},${A.Y(-0.4)} L${A.X(1.4)},${A.Y(0.1)} L${A.X(0.1)},${A.Y(1.4)} L${A.X(-0.4)},${A.Y(1.4)} Z`, { fill: 'var(--c-b)', 'clip-path': 'url(#w06-xor-clip)' }); F.s.band.style.opacity = 0;
     F.s.try = F.line(A.X(-0.4), A.Y(0.5), A.X(1.4), A.Y(0.5), { stroke: 'var(--bad)', 'stroke-width': 3, 'stroke-dasharray': '7 5', 'clip-path': 'url(#w06-xor-clip)' }); F.s.try.style.opacity = 0;
@@ -145,8 +145,8 @@ const sceneXor = {
     F.text(610, 201, 'bias −0.5 (OR)', { size: 11.5, cls: 'soft' }, F.s.net); F.text(610, 341, 'bias −1.5 (AND)', { size: 11.5, cls: 'soft' }, F.s.net); F.text(780, 271, 'bias −0.5', { size: 11.5, cls: 'soft' }, F.s.net);
     F.text(610, 385, 'step activation in every neuron', { size: 12, cls: 'soft' }, F.s.net);
     F.s.v = {}; for (const k of ['x1', 'x2', 'h1', 'h2', 'o']) { const [x, y] = N[k]; F.s.v[k] = tag(F, x, y + (k === 'o' ? 46 : k[0] === 'x' ? 0 : 0), '', 'ok'); F.s.v[k].__t.y = y - 44; F.s.v[k].setAttribute('transform', `translate(${x},${y - 44})`); }
-    F.s.no = K.callout(F, 190, 402, 'no single line works', { tone: 'bad', w: 180 });
-    F.s.yes = K.callout(F, 190, 402, 'two lines cut out a band', { tone: 'ok', w: 200 });
+    F.s.no = K.callout(F, 190, 398, 'no single line works', { tone: 'bad', w: 180 });
+    F.s.yes = K.callout(F, 190, 398, 'two lines cut out a band', { tone: 'ok', w: 200 });
   },
   steps: [
     { title: 'The XOR problem', say: ['XOR outputs one when exactly one of the two inputs is one.', 'No single straight line can put both ones on one side and both zeros on the other side.'],
