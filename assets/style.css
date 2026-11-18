@@ -72,7 +72,7 @@ button{cursor:pointer}
 .clo{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--fig-bg)}
 .clo b{display:inline-block;background:var(--accent);color:#fff;border-radius:6px;padding:1px 8px;font-size:12.5px;margin-bottom:6px}
 .plan{width:100%;border-collapse:separate;border-spacing:0;font-size:15px}
-.plan th{position:sticky;top:50px;background:var(--card);text-align:left;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--line)}
+.plan th{position:static;background:var(--card);text-align:left;font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:10px 12px;border-bottom:2px solid var(--line)}
 .plan td{padding:12px;border-bottom:1px solid var(--line);vertical-align:top}
 .plan tr:hover td{background:color-mix(in srgb,var(--accent-bg) 55%,transparent)}
 .plan .wk{font-weight:700;width:48px;color:var(--accent)}
@@ -231,3 +231,7 @@ svg .glow{filter:drop-shadow(0 0 5px var(--c-a))}
 table.mini{border-collapse:collapse;margin:10px 0;font-family:var(--mono,ui-monospace,monospace);font-size:.95rem}
 table.mini th,table.mini td{border:1px solid var(--line);padding:5px 14px;text-align:center}
 table.mini th{background:var(--card);font-weight:700}
+
+/* anchors and the sticky plan header: never hide the first row behind the bars */
+html{scroll-padding-top:112px}
+#plan,.plan{scroll-margin-top:112px}

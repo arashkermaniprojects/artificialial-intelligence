@@ -1,0 +1,209 @@
+{
+ "lif.0": {
+  "f": "lif_0.mp3",
+  "t": [
+   0.0,
+   5.097
+  ],
+  "d": 10.195,
+  "engine": "eleven"
+ },
+ "lif.1": {
+  "f": "lif_1.mp3",
+  "t": [
+   0.0,
+   4.563
+  ],
+  "d": 8.384,
+  "engine": "eleven"
+ },
+ "lif.2": {
+  "f": "lif_2.mp3",
+  "t": [
+   0.0,
+   5.793
+  ],
+  "d": 13.725,
+  "engine": "eleven"
+ },
+ "lif.3": {
+  "f": "lif_3.mp3",
+  "t": [
+   0.0,
+   5.41
+  ],
+  "d": 10.66,
+  "engine": "eleven"
+ },
+ "lif.4": {
+  "f": "lif_4.mp3",
+  "t": [
+   0.0,
+   8.208
+  ],
+  "d": 15.025,
+  "engine": "eleven"
+ },
+ "wta.0": {
+  "f": "wta_0.mp3",
+  "t": [
+   0.0,
+   5.306
+  ],
+  "d": 10.149,
+  "engine": "eleven"
+ },
+ "wta.1": {
+  "f": "wta_1.mp3",
+  "t": [
+   0.0,
+   4.772
+  ],
+  "d": 10.706,
+  "engine": "eleven"
+ },
+ "wta.2": {
+  "f": "wta_2.mp3",
+  "t": [
+   0.0,
+   5.979
+  ],
+  "d": 12.331,
+  "engine": "eleven"
+ },
+ "wta.3": {
+  "f": "wta_3.mp3",
+  "t": [
+   0.0,
+   6.177
+  ],
+  "d": 13.446,
+  "engine": "eleven"
+ },
+ "hebb.0": {
+  "f": "hebb_0.mp3",
+  "t": [
+   0.0,
+   5.399
+  ],
+  "d": 11.263,
+  "engine": "eleven"
+ },
+ "hebb.1": {
+  "f": "hebb_1.mp3",
+  "t": [
+   0.0,
+   7.14
+  ],
+  "d": 16.14,
+  "engine": "eleven"
+ },
+ "hebb.2": {
+  "f": "hebb_2.mp3",
+  "t": [
+   0.0,
+   6.362
+  ],
+  "d": 9.313,
+  "engine": "eleven"
+ },
+ "hebb.3": {
+  "f": "hebb_3.mp3",
+  "t": [
+   0.0,
+   9.52
+  ],
+  "d": 13.214,
+  "engine": "eleven"
+ },
+ "hebb.4": {
+  "f": "hebb_4.mp3",
+  "t": [
+   0.0,
+   8.022
+  ],
+  "d": 17.022,
+  "engine": "eleven"
+ },
+ "bayes.0": {
+  "f": "bayes_0.mp3",
+  "t": [
+   0.0,
+   9.625
+  ],
+  "d": 16.883,
+  "engine": "eleven"
+ },
+ "bayes.1": {
+  "f": "bayes_1.mp3",
+  "t": [
+   0.0,
+   1.95
+  ],
+  "d": 5.737,
+  "engine": "eleven"
+ },
+ "bayes.2": {
+  "f": "bayes_2.mp3",
+  "t": [
+   0.0,
+   5.074
+  ],
+  "d": 7.362,
+  "engine": "eleven"
+ },
+ "bayes.3": {
+  "f": "bayes_3.mp3",
+  "t": [
+   0.0,
+   5.503
+  ],
+  "d": 10.52,
+  "engine": "eleven"
+ },
+ "bayes.4": {
+  "f": "bayes_4.mp3",
+  "t": [
+   0.0,
+   5.224
+  ],
+  "d": 15.861,
+  "engine": "eleven"
+ },
+ "bnet.0": {
+  "f": "bnet_0.mp3",
+  "t": [
+   0.0,
+   7.384
+  ],
+  "d": 12.285,
+  "engine": "eleven"
+ },
+ "bnet.1": {
+  "f": "bnet_1.mp3",
+  "t": [
+   0.0,
+   7.442
+  ],
+  "d": 15.536,
+  "engine": "eleven"
+ },
+ "bnet.2": {
+  "f": "bnet_2.mp3",
+  "t": [
+   0.0,
+   7.523
+  ],
+  "d": 13.725,
+  "engine": "eleven"
+ },
+ "bnet.3": {
+  "f": "bnet_3.mp3",
+  "t": [
+   0.0,
+   4.981
+  ],
+  "d": 12.331,
+  "engine": "eleven"
+ }
+}

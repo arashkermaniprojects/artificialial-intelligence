@@ -144,10 +144,124 @@ const exAdm = {
   }
 };
 
+/* ================= bonus: adversarial search and alpha-beta pruning ================= */
+/* fixed 3-ply tree, leaves 3 5 | 6 9 | 1 2 | 0 4 (left to right).
+   verified with code: minimax root = 5; alpha-beta evaluates 3,5,6,1,2 (5 leaves), cuts leaf 9 and the subtree b2 (0, 4). */
+const AB_N = {
+  R: { x: 360, y: 92, kind: 'max', label: '' }, A: { x: 190, y: 172, kind: 'min', label: '' }, B: { x: 530, y: 172, kind: 'min', label: '' },
+  a1: { x: 105, y: 255, kind: 'max', label: '' }, a2: { x: 275, y: 255, kind: 'max', label: '' }, b1: { x: 445, y: 255, kind: 'max', label: '' }, b2: { x: 615, y: 255, kind: 'max', label: '' },
+  L1: { x: 65, y: 340, kind: 'leaf', label: '3' }, L2: { x: 145, y: 340, kind: 'leaf', label: '5' }, L3: { x: 235, y: 340, kind: 'leaf', label: '6' }, L4: { x: 315, y: 340, kind: 'leaf', label: '9' },
+  L5: { x: 405, y: 340, kind: 'leaf', label: '1' }, L6: { x: 485, y: 340, kind: 'leaf', label: '2' }, L7: { x: 575, y: 340, kind: 'leaf', label: '0' }, L8: { x: 655, y: 340, kind: 'leaf', label: '4' }
+};
+const AB_E = [['R', 'A'], ['R', 'B'], ['A', 'a1'], ['A', 'a2'], ['B', 'b1'], ['B', 'b2'], ['a1', 'L1'], ['a1', 'L2'], ['a2', 'L3'], ['a2', 'L4'], ['b1', 'L5'], ['b1', 'L6'], ['b2', 'L7'], ['b2', 'L8']];
+const AB_SNAP = [   // cumulative changes after each step
+  {},
+  { cur: 'a1', lab: { a1: '5', A: '≤5' }, ev: ['L1', 'L2'], ab: { a1: 'α=5  β=∞', A: 'α=−∞  β=5' } },
+  { cur: 'a2', lab: { a2: '≥6', A: '5' }, ev: ['L3'], ab: { a2: 'α=6  β=5' }, cut: ['a2>L4'] },
+  { cur: 'R', lab: { R: '≥5' }, ab: { R: 'α=5  β=∞', B: 'α=5  β=∞' } },
+  { cur: 'B', lab: { b1: '2', B: '≤2' }, ev: ['L5', 'L6'], ab: { b1: 'α=5  β=∞', B: 'α=5  β=2' }, cut: ['B>b2'] },
+  { cur: 'R', lab: { R: '5' }, best: ['R>A', 'A>a1', 'a1>L2'] }
+];
+const AB_SUB = { b2: ['b2', 'L7', 'L8'], L4: ['L4'] };
+function abSnap(F, k) {
+  const m = { lab: {}, ev: [], ab: {}, cut: [], best: [], cur: null };
+  AB_SNAP.slice(0, k + 1).forEach(s => { if (s.cur) m.cur = s.cur; Object.assign(m.lab, s.lab || {}); Object.assign(m.ab, s.ab || {}); m.ev.push(...(s.ev || [])); m.cut.push(...(s.cut || [])); m.best.push(...(s.best || [])); });
+  const T = F.s.T, gone = new Set(m.cut.flatMap(c => AB_SUB[c.split('>')[1]])), jobs = [];
+  for (const id in AB_N) {
+    if (AB_N[id].kind !== 'leaf') { T.label(id, m.lab[id] || ''); F.setText(F.s.abt[id], m.ab[id] || '', null, 12); }
+    const st = id === m.cur ? 'current' : m.ev.includes(id) ? 'closed' : m.lab[id] ? 'open' : 'idle';
+    jobs.push(T.state(id, st, 350), F.to(T.nodes[id].g, { opacity: gone.has(id) ? .28 : 1 }, 350));
+  }
+  for (const [a, b] of AB_E) {
+    const key = a + '>' + b, seen = m.lab[b] || m.ev.includes(b);
+    jobs.push(T.edgeState(a, b, m.best.includes(key) ? 'best' : (m.cut.includes(key) || gone.has(b)) ? 'pruned' : seen ? 'hot' : 'idle'));
+  }
+  for (const c in F.s.cuts) jobs.push(F.to(F.s.cuts[c], { opacity: m.cut.includes(c) ? 1 : 0 }, 300));
+  F.setText(F.s.cnt, 'leaves looked at: ' + m.ev.length + ' of 8', null, 14);
+  return Promise.all(jobs);
+}
+const sceneAB = {
+  id: 'alphabeta', title: 'Alpha-beta pruning step by step', w: 720, h: 420,
+  build(F) {
+    K.title(F, 'MAX moves first, MIN answers', 'MAX wants a high score, MIN a low one · we read the leaves from left to right');
+    F.s.T = K.tree(F, { nodes: AB_N, edges: AB_E });
+    F.s.abt = {}; for (const id in AB_N) if (AB_N[id].kind !== 'leaf') F.s.abt[id] = F.text(AB_N[id].x, AB_N[id].y + (AB_N[id].kind === 'max' ? 27 : 29), '', { size: 11, weight: 700, mono: true, fill: 'var(--accent2)' }); for (const id in F.s.abt) Object.assign(F.s.abt[id].style, { paintOrder: 'stroke', stroke: 'var(--fig-bg)', strokeWidth: '4px' });
+    F.s.cuts = {};
+    for (const [a, b] of [['a2', 'L4'], ['B', 'b2']]) { const A = AB_N[a], B = AB_N[b], mx = (A.x + B.x) / 2, my = (A.y + B.y) / 2, L = Math.hypot(B.x - A.x, B.y - A.y), ux = (B.x - A.x) / L, uy = (B.y - A.y) / L; const c = F.line(mx - uy * 13, my + ux * 13, mx + uy * 13, my - ux * 13, { stroke: 'var(--bad)', 'stroke-width': 5, 'stroke-linecap': 'round' }); c.style.opacity = 0; F.s.cuts[a + '>' + b] = c; }
+    F.s.cnt = F.text(696, 62, 'leaves looked at: 0 of 8', { size: 12.5, weight: 700, mono: true, anchor: 'end' });
+    F.s.done = K.callout(F, 360, 392, 'Root = 5, same as minimax. Alpha-beta looked at 5 leaves instead of 8.', { tone: 'ok', w: 520 });
+  },
+  steps: [
+    { title: 'A game tree', say: ['In a game, two players take turns. MAX, the triangle pointing up, wants a high score. MIN, pointing down, wants a low score.', 'Minimax looks at every leaf. Alpha beta pruning gets the same answer, but skips leaves that cannot change it.'],
+      cues: [F => abSnap(F, 0), async F => { await F.pulse(F.s.T.nodes.R.g, 1); if (!F.instant) await F.pulse(F.s.T.nodes.A.g, 1); }] },
+    { title: 'The first branch', say: ['We go down the left side. This MAX node sees three and five, so it takes five.', 'The MIN node above can now get five or less. Beta, the best value MIN is sure of, becomes five.'],
+      cues: [F => abSnap(F, 1), F => F.pulse(F.s.T.nodes.A.g, 1)] },
+    { title: 'The first cut', say: ['The next MAX node sees six, so it will get six or more.', 'But MIN already has five on its left, so it will never choose this branch. We skip the leaf nine. This is a cut.'],
+      cues: [F => abSnap(F, 2), F => F.pulse(F.s.T.nodes.L4.g, 2)] },
+    { title: 'Alpha goes up', say: ['So the left MIN node is worth exactly five. The root is now sure of at least five.', 'Alpha, the best value MAX is sure of, becomes five, and it is passed down to the right side.'],
+      cues: [F => abSnap(F, 3), F => F.pulse(F.s.T.nodes.B.g, 1)] },
+    { title: 'A whole branch is cut', say: ['On the right, this MAX node sees one and two, so it is worth two.', 'The MIN node above can get two or less, but the root already has five. Its last branch is skipped without even looking.'],
+      cues: [F => abSnap(F, 4), F => F.pulse(F.s.T.nodes.b2.g, 2)] },
+    { title: 'Same answer, less work', say: ['The root value is five, the same as plain minimax.', 'Alpha beta looked at five leaves instead of eight. With a good move order, it can search about twice as deep in the same time.'],
+      cues: [F => abSnap(F, 5), F => F.show(F.s.done)] }
+  ]
+};
+/* random game trees for the exercises: 2 plies with 3 moves, or 3 plies with 2 moves; distinct leaf values */
+function gameTree(r) {
+  const deep = r.chance(.5), d = deep ? 3 : 2, b = deep ? 2 : 3, N = Math.pow(b, d), vals = r.shuffle(Array.from({ length: 20 }, (_, i) => i + 1)).slice(0, N);
+  let li = 0; const mk = l => l === d ? { v: vals[li], i: li++ } : { ch: Array.from({ length: b }, () => mk(l + 1)) };
+  return { t: mk(0), d, b, N, vals };
+}
+function gMinimax(n, max = true) { if (!n.ch) return n.v; const vs = n.ch.map(c => gMinimax(c, !max)); n.mm = max ? Math.max(...vs) : Math.min(...vs); return n.mm; }
+function gAB(n, a, b, max, seen) {
+  if (!n.ch) { seen.push(n.i); return n.v; }
+  let v = max ? -Infinity : Infinity;
+  for (const c of n.ch) { const cv = gAB(c, a, b, !max, seen); if (max) { v = Math.max(v, cv); if (v >= b) return v; a = Math.max(a, v); } else { v = Math.min(v, cv); if (v <= a) return v; b = Math.min(b, v); } }
+  return v;
+}
+function drawGame(F, G, o = {}) {
+  const nodes = {}, edges = [], W = 600; let leafX = 0, id = 0; const sp = (W - 60) / G.N;
+  (function walk(n, l, pid) { const me = 'n' + (id++); n.id = me; if (pid) edges.push([pid, me]); if (n.ch) { n.ch.forEach(c => walk(c, l + 1, me)); nodes[me] = { x: (nodes[n.ch[0].id].x + nodes[n.ch[n.ch.length - 1].id].x) / 2, y: 40 + l * 70, kind: l % 2 ? 'min' : 'max', label: o.values ? String(n.mm) : '' }; } else { nodes[me] = { x: 30 + sp * (leafX++ + .5), y: 40 + l * 70, kind: 'leaf', label: String(n.v) }; } })(G.t, 0, null);
+  const T = K.tree(F, { nodes, edges });
+  if (o.seen) { const seen = new Set(o.seen); (function mark(n) { if (n.ch) n.ch.forEach(mark); else if (!seen.has(n.i)) { F.set(T.nodes[n.id].g, { opacity: .3 }); } else T.state(n.id, 'closed', 0); })(G.t); edges.forEach(([a, b]) => { const leafIds = []; (function f(n) { if (n.id === b) collect(n); else if (n.ch) n.ch.forEach(f); })(G.t); function collect(n) { if (n.ch) n.ch.forEach(collect); else leafIds.push(n.i); } if (leafIds.every(i => !seen.has(i))) T.edgeState(a, b, 'pruned', 0); }); }
+  return T;
+}
+const exMinimax = {
+  title: 'Compute the minimax value', random: true,
+  gen(r) {
+    const G = gameTree(r), v = gMinimax(G.t);
+    const lev = []; (function walk(n, l) { if (!n.ch) return; (lev[l] = lev[l] || []).push(n.mm); n.ch.forEach(c => walk(c, l + 1)); })(G.t, 0);
+    const desc = lev.map((vs, l) => (l % 2 ? 'MIN' : 'MAX') + ' level ' + l + ': ' + vs.join(', ')).reverse();
+    return {
+      prompt: `MAX moves at the root (▲), MIN answers (▼)${G.d === 3 ? ', then MAX moves again' : ''}. The numbers at the bottom are the final scores for MAX. What is the <b>minimax value of the root</b>?`,
+      hint: 'Work from the bottom up. A MAX node takes the largest value of its children, a MIN node the smallest.',
+      answer: 'Bottom up, left to right: ' + desc.join('; ') + `. The root value is <b>${v}</b>.`,
+      check: { type: 'number', answer: v, tol: 0.01 },
+      figure: { w: 600, h: G.d === 3 ? 270 : 200, draw(F) { drawGame(F, G); } },
+      answerFigure: { w: 600, h: G.d === 3 ? 270 : 200, draw(F) { drawGame(F, G, { values: true }); } }
+    };
+  }
+};
+const exPrune = {
+  title: 'How many leaves does alpha-beta skip?', random: true,
+  gen(r) {
+    const G = gameTree(r), seen = [], v = gAB(G.t, -Infinity, Infinity, true, seen); gMinimax(G.t);
+    const skipped = G.vals.filter((_, i) => !seen.includes(i)), mm = G.t.mm;
+    return {
+      prompt: `Run <b>alpha-beta pruning</b> on this game tree, children from left to right (MAX at the root). Cut when a MAX node reaches a value ≥ β, or a MIN node reaches a value ≤ α. How many leaves are <b>never evaluated</b>?`,
+      hint: 'Carry α (best for MAX so far) and β (best for MIN so far) down the tree. After each child, update the node value; if it crosses the bound passed from above, skip the remaining children.',
+      answer: `Leaves evaluated, in order: ${seen.map(i => G.vals[i]).join(', ')} (${seen.length} of ${G.N}). Skipped: ${skipped.length ? skipped.join(', ') : 'none'}. So <b>${skipped.length}</b> leaves are pruned. The root value is ${v}, the same as minimax (${mm}).`,
+      check: { type: 'number', answer: skipped.length, tol: 0.01 },
+      figure: { w: 600, h: G.d === 3 ? 270 : 200, draw(F) { drawGame(F, G); } },
+      answerFigure: { w: 600, h: G.d === 3 ? 270 : 200, draw(F) { drawGame(F, G, { values: true, seen }); } }
+    };
+  }
+};
+
 Course.lecture({
   id: 'w03', num: 3, week: 3, kind: 'lecture', title: 'Informed search: A*',
   lede: 'Uniform cost search is honest but blind. Greedy search is fast but easily fooled. A star adds what we paid to what we expect to pay, and gets both right.',
-  clos: [1], widgets: ['astar'],
+  clos: [1], widgets: ['astar', 'alphabeta'],
   goals: ['explain what <b>g</b>, <b>h</b> and <b>f = g + h</b> mean, and run A* by hand on a small graph',
     'tell an <b>admissible</b> heuristic from a dishonest one, and say why it keeps A* optimal',
     'compare heuristics such as misplaced tiles and Manhattan distance',
@@ -178,6 +292,16 @@ Course.lecture({
       { html: '<p>Draw walls, move the start and the goal, and switch the algorithm and the heuristic. Watch which cells are opened, and what happens to the path when you multiply h by a weight larger than one.</p>' },
       { widget: 'astar' },
       { note: '<b>Try this.</b> (1) Compare A* with Dijkstra on the same map: count the opened cells. (2) Set the weight to 3: the search is faster, but the path may no longer be the shortest. (3) Choose the Manhattan heuristic with 8 moves and see why it stops being honest.' }
+    ] },
+    { id: 'games', title: 'Bonus: adversarial search and alpha-beta pruning', blocks: [
+      { html: '<p>In a game there is an <b>opponent</b>. We plan for the worst: MAX (us) picks the move with the highest value, MIN (the opponent) answers with the lowest. Backing these values up from the end positions to the root is called <b>minimax</b>. It looks at every leaf, so its cost grows like $b^m$.</p><p><b>Alpha-beta pruning</b> carries two numbers down the tree: <b>α</b>, the best value MAX is already sure of, and <b>β</b>, the best value MIN is already sure of. When a node\'s value crosses them, the rest of that node cannot change the decision: we cut it.</p>' },
+      { scene: sceneAB },
+      { note: '<b>The two cut rules.</b> At a MAX node: if its value reaches β or more, stop (MIN above will avoid it). At a MIN node: if its value reaches α or less, stop (MAX above will avoid it). Pruning never changes the root value. It only saves work.' },
+      { exercise: exMinimax },
+      { exercise: exPrune },
+      { quiz: { q: 'The same game tree is searched twice with alpha-beta: once with the best moves tried first, once with the best moves tried last. What changes?', options: ['The root value', 'The number of leaves evaluated', 'The move MAX chooses', 'Nothing at all'], correct: 1, why: 'Alpha-beta always returns the minimax value. Good ordering finds strong values early, so more cuts happen: about $b^{m/2}$ leaves instead of $b^m$. That is why chess programs try captures and the previous best move first.' } },
+      { widget: 'alphabeta' },
+      { note: '<b>Try this.</b> (1) Press Play with alpha-beta and watch α and β travel down. (2) Press <b>Best ordering</b>, then <b>Worst ordering</b>, and compare the leaf counters: the root value never changes. (3) Click a leaf and change its value to make a cut appear or disappear.' }
     ] }
   ]
 });

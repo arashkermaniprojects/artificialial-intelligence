@@ -1,0 +1,245 @@
+{
+ "next.0": {
+  "f": "next_0.mp3",
+  "t": [
+   0.0,
+   6.107
+  ],
+  "d": 11.31,
+  "engine": "eleven"
+ },
+ "next.1": {
+  "f": "next_1.mp3",
+  "t": [
+   0.0,
+   7.047
+  ],
+  "d": 11.449,
+  "engine": "eleven"
+ },
+ "next.2": {
+  "f": "next_2.mp3",
+  "t": [
+   0.0,
+   4.18
+  ],
+  "d": 9.313,
+  "engine": "eleven"
+ },
+ "next.3": {
+  "f": "next_3.mp3",
+  "t": [
+   0.0,
+   6.536
+  ],
+  "d": 11.728,
+  "engine": "eleven"
+ },
+ "lookup.0": {
+  "f": "lookup_0.mp3",
+  "t": [
+   0.0,
+   7.001
+  ],
+  "d": 12.657,
+  "engine": "eleven"
+ },
+ "lookup.1": {
+  "f": "lookup_1.mp3",
+  "t": [
+   0.0,
+   3.727
+  ],
+  "d": 8.802,
+  "engine": "eleven"
+ },
+ "lookup.2": {
+  "f": "lookup_2.mp3",
+  "t": [
+   0.0,
+   6.374
+  ],
+  "d": 11.774,
+  "engine": "eleven"
+ },
+ "lookup.3": {
+  "f": "lookup_3.mp3",
+  "t": [
+   0.0,
+   5.201
+  ],
+  "d": 13.121,
+  "engine": "eleven"
+ },
+ "lookup.4": {
+  "f": "lookup_4.mp3",
+  "t": [
+   0.0,
+   7.581
+  ],
+  "d": 14.514,
+  "engine": "eleven"
+ },
+ "table.0": {
+  "f": "table_0.mp3",
+  "t": [
+   0.0,
+   4.679
+  ],
+  "d": 10.985,
+  "engine": "eleven"
+ },
+ "table.1": {
+  "f": "table_1.mp3",
+  "t": [
+   0.0,
+   6.293
+  ],
+  "d": 13.028,
+  "engine": "eleven"
+ },
+ "table.2": {
+  "f": "table_2.mp3",
+  "t": [
+   0.0,
+   2.206
+  ],
+  "d": 11.263,
+  "engine": "eleven"
+ },
+ "table.3": {
+  "f": "table_3.mp3",
+  "t": [
+   0.0,
+   5.642
+  ],
+  "d": 12.331,
+  "engine": "eleven"
+ },
+ "block.0": {
+  "f": "block_0.mp3",
+  "t": [
+   0.0,
+   4.063
+  ],
+  "d": 13.539,
+  "engine": "eleven"
+ },
+ "block.1": {
+  "f": "block_1.mp3",
+  "t": [
+   0.0,
+   5.143
+  ],
+  "d": 7.595,
+  "engine": "eleven"
+ },
+ "block.2": {
+  "f": "block_2.mp3",
+  "t": [
+   0.0,
+   4.957
+  ],
+  "d": 8.013,
+  "engine": "eleven"
+ },
+ "block.3": {
+  "f": "block_3.mp3",
+  "t": [
+   0.0,
+   7.639
+  ],
+  "d": 12.378,
+  "engine": "eleven"
+ },
+ "block.4": {
+  "f": "block_4.mp3",
+  "t": [
+   0.0,
+   6.769
+  ],
+  "d": 12.564,
+  "engine": "eleven"
+ },
+ "pipe.0": {
+  "f": "pipe_0.mp3",
+  "t": [
+   0.0,
+   5.108
+  ],
+  "d": 11.124,
+  "engine": "eleven"
+ },
+ "pipe.1": {
+  "f": "pipe_1.mp3",
+  "t": [
+   0.0,
+   7.372
+  ],
+  "d": 12.378,
+  "engine": "eleven"
+ },
+ "pipe.2": {
+  "f": "pipe_2.mp3",
+  "t": [
+   0.0,
+   5.05
+  ],
+  "d": 8.059,
+  "engine": "eleven"
+ },
+ "pipe.3": {
+  "f": "pipe_3.mp3",
+  "t": [
+   0.0,
+   6.026
+  ],
+  "d": 10.706,
+  "engine": "eleven"
+ },
+ "sample.0": {
+  "f": "sample_0.mp3",
+  "t": [
+   0.0,
+   6.525
+  ],
+  "d": 11.217,
+  "engine": "eleven"
+ },
+ "sample.1": {
+  "f": "sample_1.mp3",
+  "t": [
+   0.0,
+   6.722
+  ],
+  "d": 14.375,
+  "engine": "eleven"
+ },
+ "sample.2": {
+  "f": "sample_2.mp3",
+  "t": [
+   0.0,
+   6.978
+  ],
+  "d": 12.749,
+  "engine": "eleven"
+ },
+ "sample.3": {
+  "f": "sample_3.mp3",
+  "t": [
+   0.0,
+   3.831
+  ],
+  "d": 9.87,
+  "engine": "eleven"
+ },
+ "sample.4": {
+  "f": "sample_4.mp3",
+  "t": [
+   0.0,
+   6.502
+  ],
+  "d": 11.31,
+  "engine": "eleven"
+ }
+}

@@ -1,0 +1,209 @@
+{
+ "bandit.0": {
+  "f": "bandit_0.mp3",
+  "t": [
+   0.0,
+   4.899
+  ],
+  "d": 9.592,
+  "engine": "eleven"
+ },
+ "bandit.1": {
+  "f": "bandit_1.mp3",
+  "t": [
+   0.0,
+   6.56
+  ],
+  "d": 13.539,
+  "engine": "eleven"
+ },
+ "bandit.2": {
+  "f": "bandit_2.mp3",
+  "t": [
+   0.0,
+   5.248
+  ],
+  "d": 12.471,
+  "engine": "eleven"
+ },
+ "bandit.3": {
+  "f": "bandit_3.mp3",
+  "t": [
+   0.0,
+   7.999
+  ],
+  "d": 16.558,
+  "engine": "eleven"
+ },
+ "bandit.4": {
+  "f": "bandit_4.mp3",
+  "t": [
+   0.0,
+   5.596
+  ],
+  "d": 14.468,
+  "engine": "eleven"
+ },
+ "curves.0": {
+  "f": "curves_0.mp3",
+  "t": [
+   0.0,
+   7.419
+  ],
+  "d": 14.514,
+  "engine": "eleven"
+ },
+ "curves.1": {
+  "f": "curves_1.mp3",
+  "t": [
+   0.0,
+   3.413
+  ],
+  "d": 8.152,
+  "engine": "eleven"
+ },
+ "curves.2": {
+  "f": "curves_2.mp3",
+  "t": [
+   0.0,
+   5.108
+  ],
+  "d": 10.567,
+  "engine": "eleven"
+ },
+ "curves.3": {
+  "f": "curves_3.mp3",
+  "t": [
+   0.0,
+   4.516
+  ],
+  "d": 9.824,
+  "engine": "eleven"
+ },
+ "curves.4": {
+  "f": "curves_4.mp3",
+  "t": [
+   0.0,
+   4.458
+  ],
+  "d": 14.282,
+  "engine": "eleven"
+ },
+ "scale.0": {
+  "f": "scale_0.mp3",
+  "t": [
+   0.0,
+   3.146
+  ],
+  "d": 12.517,
+  "engine": "eleven"
+ },
+ "scale.1": {
+  "f": "scale_1.mp3",
+  "t": [
+   0.0,
+   7.825
+  ],
+  "d": 15.257,
+  "engine": "eleven"
+ },
+ "scale.2": {
+  "f": "scale_2.mp3",
+  "t": [
+   0.0,
+   8.348
+  ],
+  "d": 17.301,
+  "engine": "eleven"
+ },
+ "scale.3": {
+  "f": "scale_3.mp3",
+  "t": [
+   0.0,
+   6.165
+  ],
+  "d": 14.607,
+  "engine": "eleven"
+ },
+ "pg.0": {
+  "f": "pg_0.mp3",
+  "t": [
+   0.0,
+   9.543
+  ],
+  "d": 12.749,
+  "engine": "eleven"
+ },
+ "pg.1": {
+  "f": "pg_1.mp3",
+  "t": [
+   0.0,
+   5.317
+  ],
+  "d": 11.31,
+  "engine": "eleven"
+ },
+ "pg.2": {
+  "f": "pg_2.mp3",
+  "t": [
+   0.0,
+   3.692
+  ],
+  "d": 9.313,
+  "engine": "eleven"
+ },
+ "pg.3": {
+  "f": "pg_3.mp3",
+  "t": [
+   0.0,
+   7.988
+  ],
+  "d": 13.957,
+  "engine": "eleven"
+ },
+ "rlhf.0": {
+  "f": "rlhf_0.mp3",
+  "t": [
+   0.0,
+   4.888
+  ],
+  "d": 8.338,
+  "engine": "eleven"
+ },
+ "rlhf.1": {
+  "f": "rlhf_1.mp3",
+  "t": [
+   0.0,
+   6.304
+  ],
+  "d": 9.777,
+  "engine": "eleven"
+ },
+ "rlhf.2": {
+  "f": "rlhf_2.mp3",
+  "t": [
+   0.0,
+   8.568
+  ],
+  "d": 13.957,
+  "engine": "eleven"
+ },
+ "rlhf.3": {
+  "f": "rlhf_3.mp3",
+  "t": [
+   0.0,
+   10.879
+  ],
+  "d": 17.533,
+  "engine": "eleven"
+ },
+ "rlhf.4": {
+  "f": "rlhf_4.mp3",
+  "t": [
+   0.0,
+   10.786
+  ],
+  "d": 21.016,
+  "engine": "eleven"
+ }
+}

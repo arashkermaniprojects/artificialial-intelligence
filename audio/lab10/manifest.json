@@ -1,0 +1,38 @@
+{
+ "pairs.0": {
+  "f": "pairs_0.mp3",
+  "t": [
+   0.0,
+   6.095
+  ],
+  "d": 9.313,
+  "engine": "eleven"
+ },
+ "pairs.1": {
+  "f": "pairs_1.mp3",
+  "t": [
+   0.0,
+   4.447
+  ],
+  "d": 7.595,
+  "engine": "eleven"
+ },
+ "pairs.2": {
+  "f": "pairs_2.mp3",
+  "t": [
+   0.0,
+   4.656
+  ],
+  "d": 11.356,
+  "engine": "eleven"
+ },
+ "pairs.3": {
+  "f": "pairs_3.mp3",
+  "t": [
+   0.0,
+   6.281
+  ],
+  "d": 12.982,
+  "engine": "eleven"
+ }
+}

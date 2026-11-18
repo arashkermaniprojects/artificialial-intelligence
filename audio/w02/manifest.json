@@ -1,0 +1,182 @@
+{
+ "formulate.0": {
+  "f": "formulate_0.mp3",
+  "t": [
+   0.0,
+   9.079
+  ],
+  "d": 13.818,
+  "engine": "eleven"
+ },
+ "formulate.1": {
+  "f": "formulate_1.mp3",
+  "t": [
+   0.0,
+   4.238
+  ],
+  "d": 7.92,
+  "engine": "eleven"
+ },
+ "formulate.2": {
+  "f": "formulate_2.mp3",
+  "t": [
+   0.0,
+   3.657
+  ],
+  "d": 7.92,
+  "engine": "eleven"
+ },
+ "formulate.3": {
+  "f": "formulate_3.mp3",
+  "t": [
+   0.0,
+   3.39
+  ],
+  "d": 8.802,
+  "engine": "eleven"
+ },
+ "formulate.4": {
+  "f": "formulate_4.mp3",
+  "t": [
+   0.0,
+   8.475
+  ],
+  "d": 14.979,
+  "engine": "eleven"
+ },
+ "bfsdfs.0": {
+  "f": "bfsdfs_0.mp3",
+  "t": [
+   0.0,
+   5.062
+  ],
+  "d": 14.375,
+  "engine": "eleven"
+ },
+ "bfsdfs.1": {
+  "f": "bfsdfs_1.mp3",
+  "t": [
+   0.0,
+   2.67
+  ],
+  "d": 8.338,
+  "engine": "eleven"
+ },
+ "bfsdfs.2": {
+  "f": "bfsdfs_2.mp3",
+  "t": [
+   0.0,
+   4.377
+  ],
+  "d": 10.149,
+  "engine": "eleven"
+ },
+ "bfsdfs.3": {
+  "f": "bfsdfs_3.mp3",
+  "t": [
+   0.0,
+   3.262
+  ],
+  "d": 8.431,
+  "engine": "eleven"
+ },
+ "bfsdfs.4": {
+  "f": "bfsdfs_4.mp3",
+  "t": [
+   0.0,
+   5.55
+  ],
+  "d": 10.66,
+  "engine": "eleven"
+ },
+ "bfsdfs.5": {
+  "f": "bfsdfs_5.mp3",
+  "t": [
+   0.0,
+   5.12
+  ],
+  "d": 14.746,
+  "engine": "eleven"
+ },
+ "ucs.0": {
+  "f": "ucs_0.mp3",
+  "t": [
+   0.0,
+   7.314
+  ],
+  "d": 15.164,
+  "engine": "eleven"
+ },
+ "ucs.1": {
+  "f": "ucs_1.mp3",
+  "t": [
+   0.0,
+   2.392
+  ],
+  "d": 6.48,
+  "engine": "eleven"
+ },
+ "ucs.2": {
+  "f": "ucs_2.mp3",
+  "t": [
+   0.0,
+   2.624
+  ],
+  "d": 10.892,
+  "engine": "eleven"
+ },
+ "ucs.3": {
+  "f": "ucs_3.mp3",
+  "t": [
+   0.0,
+   5.19
+  ],
+  "d": 12.331,
+  "engine": "eleven"
+ },
+ "ucs.4": {
+  "f": "ucs_4.mp3",
+  "t": [
+   0.0,
+   5.793
+  ],
+  "d": 14.375,
+  "engine": "eleven"
+ },
+ "growth.0": {
+  "f": "growth_0.mp3",
+  "t": [
+   0.0,
+   6.142
+  ],
+  "d": 11.681,
+  "engine": "eleven"
+ },
+ "growth.1": {
+  "f": "growth_1.mp3",
+  "t": [
+   0.0,
+   4.632
+  ],
+  "d": 11.867,
+  "engine": "eleven"
+ },
+ "growth.2": {
+  "f": "growth_2.mp3",
+  "t": [
+   0.0,
+   8.034
+  ],
+  "d": 11.774,
+  "engine": "eleven"
+ },
+ "growth.3": {
+  "f": "growth_3.mp3",
+  "t": [
+   0.0,
+   7.233
+  ],
+  "d": 13.4,
+  "engine": "eleven"
+ }
+}

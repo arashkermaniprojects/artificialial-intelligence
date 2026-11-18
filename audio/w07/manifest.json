@@ -1,0 +1,211 @@
+{
+ "leash.0": {
+  "f": "leash_0.mp3",
+  "t": [
+   0.0,
+   3.379
+  ],
+  "d": 8.57,
+  "engine": "eleven"
+ },
+ "leash.1": {
+  "f": "leash_1.mp3",
+  "t": [
+   0.0,
+   3.077
+  ],
+  "d": 10.056,
+  "engine": "eleven"
+ },
+ "leash.2": {
+  "f": "leash_2.mp3",
+  "t": [
+   0.0,
+   3.216,
+   10.24
+  ],
+  "d": 15.211,
+  "engine": "eleven"
+ },
+ "leash.3": {
+  "f": "leash_3.mp3",
+  "t": [
+   0.0,
+   4.586
+  ],
+  "d": 13.771,
+  "engine": "eleven"
+ },
+ "stop.0": {
+  "f": "stop_0.mp3",
+  "t": [
+   0.0,
+   5.631
+  ],
+  "d": 12.285,
+  "engine": "eleven"
+ },
+ "stop.1": {
+  "f": "stop_1.mp3",
+  "t": [
+   0.0,
+   4.783
+  ],
+  "d": 10.799,
+  "engine": "eleven"
+ },
+ "stop.2": {
+  "f": "stop_2.mp3",
+  "t": [
+   0.0,
+   5.619
+  ],
+  "d": 9.499,
+  "engine": "eleven"
+ },
+ "stop.3": {
+  "f": "stop_3.mp3",
+  "t": [
+   0.0,
+   5.399
+  ],
+  "d": 11.449,
+  "engine": "eleven"
+ },
+ "dropout.0": {
+  "f": "dropout_0.mp3",
+  "t": [
+   0.0,
+   4.83
+  ],
+  "d": 10.753,
+  "engine": "eleven"
+ },
+ "dropout.1": {
+  "f": "dropout_1.mp3",
+  "t": [
+   0.0,
+   6.827
+  ],
+  "d": 12.285,
+  "engine": "eleven"
+ },
+ "dropout.2": {
+  "f": "dropout_2.mp3",
+  "t": [
+   0.0,
+   4.609
+  ],
+  "d": 10.845,
+  "engine": "eleven"
+ },
+ "dropout.3": {
+  "f": "dropout_3.mp3",
+  "t": [
+   0.0,
+   3.158
+  ],
+  "d": 12.053,
+  "engine": "eleven"
+ },
+ "dropout.4": {
+  "f": "dropout_4.mp3",
+  "t": [
+   0.0,
+   8.58,
+   13.909
+  ],
+  "d": 21.666,
+  "engine": "eleven"
+ },
+ "conv.0": {
+  "f": "conv_0.mp3",
+  "t": [
+   0.0,
+   7.233
+  ],
+  "d": 10.381,
+  "engine": "eleven"
+ },
+ "conv.1": {
+  "f": "conv_1.mp3",
+  "t": [
+   0.0,
+   5.654
+  ],
+  "d": 13.353,
+  "engine": "eleven"
+ },
+ "conv.2": {
+  "f": "conv_2.mp3",
+  "t": [
+   0.0,
+   7.291
+  ],
+  "d": 13.91,
+  "engine": "eleven"
+ },
+ "conv.3": {
+  "f": "conv_3.mp3",
+  "t": [
+   0.0,
+   4.458
+  ],
+  "d": 14.282,
+  "engine": "eleven"
+ },
+ "conv.4": {
+  "f": "conv_4.mp3",
+  "t": [
+   0.0,
+   5.596
+  ],
+  "d": 13.818,
+  "engine": "eleven"
+ },
+ "conv.5": {
+  "f": "conv_5.mp3",
+  "t": [
+   0.0,
+   5.155
+  ],
+  "d": 16.418,
+  "engine": "eleven"
+ },
+ "transfer.0": {
+  "f": "transfer_0.mp3",
+  "t": [
+   0.0,
+   5.375
+  ],
+  "d": 11.031,
+  "engine": "eleven"
+ },
+ "transfer.1": {
+  "f": "transfer_1.mp3",
+  "t": [
+   0.0,
+   5.352
+  ],
+  "d": 12.053,
+  "engine": "eleven"
+ },
+ "transfer.2": {
+  "f": "transfer_2.mp3",
+  "t": [
+   0.0,
+   4.644
+  ],
+  "d": 9.034,
+  "engine": "eleven"
+ },
+ "transfer.3": {
+  "f": "transfer_3.mp3",
+  "t": [
+   0.0,
+   6.931
+  ],
+  "d": 16.65,
+  "engine": "eleven"
+ }
+}

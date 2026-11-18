@@ -1,0 +1,170 @@
+{
+ "map.0": {
+  "f": "map_0.mp3",
+  "t": [
+   0.0,
+   3.448
+  ],
+  "d": 10.567,
+  "engine": "eleven"
+ },
+ "map.1": {
+  "f": "map_1.mp3",
+  "t": [
+   0.0,
+   8.661
+  ],
+  "d": 12.378,
+  "engine": "eleven"
+ },
+ "map.2": {
+  "f": "map_2.mp3",
+  "t": [
+   0.0,
+   6.606
+  ],
+  "d": 12.935,
+  "engine": "eleven"
+ },
+ "map.3": {
+  "f": "map_3.mp3",
+  "t": [
+   0.0,
+   8.464
+  ],
+  "d": 15.397,
+  "engine": "eleven"
+ },
+ "map.4": {
+  "f": "map_4.mp3",
+  "t": [
+   0.0
+  ],
+  "d": 8.291,
+  "engine": "eleven"
+ },
+ "search3.0": {
+  "f": "search3_0.mp3",
+  "t": [
+   0.0,
+   5.538
+  ],
+  "d": 9.313,
+  "engine": "eleven"
+ },
+ "search3.1": {
+  "f": "search3_1.mp3",
+  "t": [
+   0.0,
+   3.077
+  ],
+  "d": 8.059,
+  "engine": "eleven"
+ },
+ "search3.2": {
+  "f": "search3_2.mp3",
+  "t": [
+   0.0,
+   3.982
+  ],
+  "d": 10.195,
+  "engine": "eleven"
+ },
+ "search3.3": {
+  "f": "search3_3.mp3",
+  "t": [
+   0.0,
+   3.553
+  ],
+  "d": 10.335,
+  "engine": "eleven"
+ },
+ "search3.4": {
+  "f": "search3_4.mp3",
+  "t": [
+   0.0
+  ],
+  "d": 10.427,
+  "engine": "eleven"
+ },
+ "gdrecap.0": {
+  "f": "gdrecap_0.mp3",
+  "t": [
+   0.0,
+   4.238
+  ],
+  "d": 8.384,
+  "engine": "eleven"
+ },
+ "gdrecap.1": {
+  "f": "gdrecap_1.mp3",
+  "t": [
+   0.0,
+   7.361
+  ],
+  "d": 12.331,
+  "engine": "eleven"
+ },
+ "gdrecap.2": {
+  "f": "gdrecap_2.mp3",
+  "t": [
+   0.0,
+   7.175
+  ],
+  "d": 10.427,
+  "engine": "eleven"
+ },
+ "gdrecap.3": {
+  "f": "gdrecap_3.mp3",
+  "t": [
+   0.0,
+   8.742
+  ],
+  "d": 14.003,
+  "engine": "eleven"
+ },
+ "bprecap.0": {
+  "f": "bprecap_0.mp3",
+  "t": [
+   0.0,
+   7.059
+  ],
+  "d": 12.749,
+  "engine": "eleven"
+ },
+ "bprecap.1": {
+  "f": "bprecap_1.mp3",
+  "t": [
+   0.0
+  ],
+  "d": 5.505,
+  "engine": "eleven"
+ },
+ "bprecap.2": {
+  "f": "bprecap_2.mp3",
+  "t": [
+   0.0,
+   4.505
+  ],
+  "d": 11.031,
+  "engine": "eleven"
+ },
+ "bprecap.3": {
+  "f": "bprecap_3.mp3",
+  "t": [
+   0.0,
+   7.535
+  ],
+  "d": 13.353,
+  "engine": "eleven"
+ },
+ "bprecap.4": {
+  "f": "bprecap_4.mp3",
+  "t": [
+   0.0,
+   9.648
+  ],
+  "d": 14.886,
+  "engine": "eleven"
+ }
+}

@@ -1,0 +1,182 @@
+{
+ "loop.0": {
+  "f": "loop_0.mp3",
+  "t": [
+   0.0,
+   6.699
+  ],
+  "d": 11.17,
+  "engine": "eleven"
+ },
+ "loop.1": {
+  "f": "loop_1.mp3",
+  "t": [
+   0.0,
+   4.296
+  ],
+  "d": 11.17,
+  "engine": "eleven"
+ },
+ "loop.2": {
+  "f": "loop_2.mp3",
+  "t": [
+   0.0,
+   6.815
+  ],
+  "d": 11.031,
+  "engine": "eleven"
+ },
+ "loop.3": {
+  "f": "loop_3.mp3",
+  "t": [
+   0.0,
+   7.639
+  ],
+  "d": 16.047,
+  "engine": "eleven"
+ },
+ "mdp.0": {
+  "f": "mdp_0.mp3",
+  "t": [
+   0.0,
+   7.918
+  ],
+  "d": 10.567,
+  "engine": "eleven"
+ },
+ "mdp.1": {
+  "f": "mdp_1.mp3",
+  "t": [
+   0.0,
+   3.46
+  ],
+  "d": 7.27,
+  "engine": "eleven"
+ },
+ "mdp.2": {
+  "f": "mdp_2.mp3",
+  "t": [
+   0.0,
+   7.129
+  ],
+  "d": 14.282,
+  "engine": "eleven"
+ },
+ "mdp.3": {
+  "f": "mdp_3.mp3",
+  "t": [
+   0.0,
+   6.281
+  ],
+  "d": 10.102,
+  "engine": "eleven"
+ },
+ "mdp.4": {
+  "f": "mdp_4.mp3",
+  "t": [
+   0.0,
+   7.361
+  ],
+  "d": 13.864,
+  "engine": "eleven"
+ },
+ "bellman.0": {
+  "f": "bellman_0.mp3",
+  "t": [
+   0.0,
+   4.493
+  ],
+  "d": 12.517,
+  "engine": "eleven"
+ },
+ "bellman.1": {
+  "f": "bellman_1.mp3",
+  "t": [
+   0.0,
+   6.653
+  ],
+  "d": 13.167,
+  "engine": "eleven"
+ },
+ "bellman.2": {
+  "f": "bellman_2.mp3",
+  "t": [
+   0.0,
+   5.468
+  ],
+  "d": 12.424,
+  "engine": "eleven"
+ },
+ "bellman.3": {
+  "f": "bellman_3.mp3",
+  "t": [
+   0.0,
+   8.243
+  ],
+  "d": 13.028,
+  "engine": "eleven"
+ },
+ "bellman.4": {
+  "f": "bellman_4.mp3",
+  "t": [
+   0.0,
+   6.177
+  ],
+  "d": 9.452,
+  "engine": "eleven"
+ },
+ "bellman.5": {
+  "f": "bellman_5.mp3",
+  "t": [
+   0.0,
+   5.085
+  ],
+  "d": 14.421,
+  "engine": "eleven"
+ },
+ "qtable.0": {
+  "f": "qtable_0.mp3",
+  "t": [
+   0.0,
+   9.358
+  ],
+  "d": 16.465,
+  "engine": "eleven"
+ },
+ "qtable.1": {
+  "f": "qtable_1.mp3",
+  "t": [
+   0.0,
+   5.155
+  ],
+  "d": 13.121,
+  "engine": "eleven"
+ },
+ "qtable.2": {
+  "f": "qtable_2.mp3",
+  "t": [
+   0.0,
+   5.027
+  ],
+  "d": 14.096,
+  "engine": "eleven"
+ },
+ "qtable.3": {
+  "f": "qtable_3.mp3",
+  "t": [
+   0.0,
+   6.327
+  ],
+  "d": 13.075,
+  "engine": "eleven"
+ },
+ "qtable.4": {
+  "f": "qtable_4.mp3",
+  "t": [
+   0.0,
+   4.632
+  ],
+  "d": 12.053,
+  "engine": "eleven"
+ }
+}

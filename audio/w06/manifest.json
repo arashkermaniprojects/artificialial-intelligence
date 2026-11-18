@@ -1,0 +1,164 @@
+{
+ "neuron.0": {
+  "f": "neuron_0.mp3",
+  "t": [
+   0.0,
+   7.198
+  ],
+  "d": 15.071,
+  "engine": "eleven"
+ },
+ "neuron.1": {
+  "f": "neuron_1.mp3",
+  "t": [
+   0.0,
+   6.095
+  ],
+  "d": 13.4,
+  "engine": "eleven"
+ },
+ "neuron.2": {
+  "f": "neuron_2.mp3",
+  "t": [
+   0.0,
+   7.314
+  ],
+  "d": 13.121,
+  "engine": "eleven"
+ },
+ "neuron.3": {
+  "f": "neuron_3.mp3",
+  "t": [
+   0.0,
+   3.251
+  ],
+  "d": 8.802,
+  "engine": "eleven"
+ },
+ "acts.0": {
+  "f": "acts_0.mp3",
+  "t": [
+   0.0,
+   7.825
+  ],
+  "d": 16.279,
+  "engine": "eleven"
+ },
+ "acts.1": {
+  "f": "acts_1.mp3",
+  "t": [
+   0.0,
+   6.223
+  ],
+  "d": 10.892,
+  "engine": "eleven"
+ },
+ "acts.2": {
+  "f": "acts_2.mp3",
+  "t": [
+   0.0,
+   7.129
+  ],
+  "d": 15.536,
+  "engine": "eleven"
+ },
+ "acts.3": {
+  "f": "acts_3.mp3",
+  "t": [
+   0.0,
+   7.79
+  ],
+  "d": 16.0,
+  "engine": "eleven"
+ },
+ "xor.0": {
+  "f": "xor_0.mp3",
+  "t": [
+   0.0,
+   4.54
+  ],
+  "d": 10.753,
+  "engine": "eleven"
+ },
+ "xor.1": {
+  "f": "xor_1.mp3",
+  "t": [
+   0.0,
+   7.639
+  ],
+  "d": 16.372,
+  "engine": "eleven"
+ },
+ "xor.2": {
+  "f": "xor_2.mp3",
+  "t": [
+   0.0,
+   10.136
+  ],
+  "d": 17.858,
+  "engine": "eleven"
+ },
+ "xor.3": {
+  "f": "xor_3.mp3",
+  "t": [
+   0.0,
+   3.866
+  ],
+  "d": 13.307,
+  "engine": "eleven"
+ },
+ "xor.4": {
+  "f": "xor_4.mp3",
+  "t": [
+   0.0,
+   4.516
+  ],
+  "d": 14.143,
+  "engine": "eleven"
+ },
+ "backprop.0": {
+  "f": "backprop_0.mp3",
+  "t": [
+   0.0,
+   6.026
+  ],
+  "d": 14.189,
+  "engine": "eleven"
+ },
+ "backprop.1": {
+  "f": "backprop_1.mp3",
+  "t": [
+   0.0,
+   3.425
+  ],
+  "d": 13.167,
+  "engine": "eleven"
+ },
+ "backprop.2": {
+  "f": "backprop_2.mp3",
+  "t": [
+   0.0,
+   6.653
+  ],
+  "d": 13.957,
+  "engine": "eleven"
+ },
+ "backprop.3": {
+  "f": "backprop_3.mp3",
+  "t": [
+   0.0,
+   7.605
+  ],
+  "d": 17.161,
+  "engine": "eleven"
+ },
+ "backprop.4": {
+  "f": "backprop_4.mp3",
+  "t": [
+   0.0,
+   9.729
+  ],
+  "d": 19.344,
+  "engine": "eleven"
+ }
+}

@@ -1,0 +1,254 @@
+{
+ "agent.0": {
+  "f": "agent_0.mp3",
+  "t": [
+   0.0,
+   5.166
+  ],
+  "d": 10.009,
+  "engine": "eleven"
+ },
+ "agent.1": {
+  "f": "agent_1.mp3",
+  "t": [
+   0.0,
+   4.818
+  ],
+  "d": 12.564,
+  "engine": "eleven"
+ },
+ "agent.2": {
+  "f": "agent_2.mp3",
+  "t": [
+   0.0,
+   4.331
+  ],
+  "d": 7.316,
+  "engine": "eleven"
+ },
+ "agent.3": {
+  "f": "agent_3.mp3",
+  "t": [
+   0.0,
+   4.748
+  ],
+  "d": 12.099,
+  "engine": "eleven"
+ },
+ "react.0": {
+  "f": "react_0.mp3",
+  "t": [
+   0.0,
+   6.258
+  ],
+  "d": 10.567,
+  "engine": "eleven"
+ },
+ "react.1": {
+  "f": "react_1.mp3",
+  "t": [
+   0.0,
+   3.855
+  ],
+  "d": 10.799,
+  "engine": "eleven"
+ },
+ "react.2": {
+  "f": "react_2.mp3",
+  "t": [
+   0.0,
+   4.899
+  ],
+  "d": 7.362,
+  "engine": "eleven"
+ },
+ "react.3": {
+  "f": "react_3.mp3",
+  "t": [
+   0.0,
+   4.934
+  ],
+  "d": 7.223,
+  "engine": "eleven"
+ },
+ "react.4": {
+  "f": "react_4.mp3",
+  "t": [
+   0.0,
+   4.76
+  ],
+  "d": 7.734,
+  "engine": "eleven"
+ },
+ "react.5": {
+  "f": "react_5.mp3",
+  "t": [
+   0.0,
+   5.039
+  ],
+  "d": 13.214,
+  "engine": "eleven"
+ },
+ "fcall.0": {
+  "f": "fcall_0.mp3",
+  "t": [
+   0.0,
+   5.399
+  ],
+  "d": 8.477,
+  "engine": "eleven"
+ },
+ "fcall.1": {
+  "f": "fcall_1.mp3",
+  "t": [
+   0.0,
+   7.187
+  ],
+  "d": 10.381,
+  "engine": "eleven"
+ },
+ "fcall.2": {
+  "f": "fcall_2.mp3",
+  "t": [
+   0.0,
+   7.605
+  ],
+  "d": 10.799,
+  "engine": "eleven"
+ },
+ "fcall.3": {
+  "f": "fcall_3.mp3",
+  "t": [
+   0.0,
+   3.111
+  ],
+  "d": 8.152,
+  "engine": "eleven"
+ },
+ "plan.0": {
+  "f": "plan_0.mp3",
+  "t": [
+   0.0,
+   6.304
+  ],
+  "d": 11.124,
+  "engine": "eleven"
+ },
+ "plan.1": {
+  "f": "plan_1.mp3",
+  "t": [
+   0.0,
+   7.129
+  ],
+  "d": 10.66,
+  "engine": "eleven"
+ },
+ "plan.2": {
+  "f": "plan_2.mp3",
+  "t": [
+   0.0,
+   5.677
+  ],
+  "d": 11.217,
+  "engine": "eleven"
+ },
+ "plan.3": {
+  "f": "plan_3.mp3",
+  "t": [
+   0.0,
+   6.85
+  ],
+  "d": 11.263,
+  "engine": "eleven"
+ },
+ "plan.4": {
+  "f": "plan_4.mp3",
+  "t": [
+   0.0,
+   2.995
+  ],
+  "d": 9.917,
+  "engine": "eleven"
+ },
+ "memory.0": {
+  "f": "memory_0.mp3",
+  "t": [
+   0.0,
+   5.619
+  ],
+  "d": 9.731,
+  "engine": "eleven"
+ },
+ "memory.1": {
+  "f": "memory_1.mp3",
+  "t": [
+   0.0,
+   3.68
+  ],
+  "d": 7.641,
+  "engine": "eleven"
+ },
+ "memory.2": {
+  "f": "memory_2.mp3",
+  "t": [
+   0.0,
+   4.714
+  ],
+  "d": 9.684,
+  "engine": "eleven"
+ },
+ "memory.3": {
+  "f": "memory_3.mp3",
+  "t": [
+   0.0,
+   7.5
+  ],
+  "d": 12.842,
+  "engine": "eleven"
+ },
+ "guard.0": {
+  "f": "guard_0.mp3",
+  "t": [
+   0.0,
+   3.518
+  ],
+  "d": 10.102,
+  "engine": "eleven"
+ },
+ "guard.1": {
+  "f": "guard_1.mp3",
+  "t": [
+   0.0,
+   4.551
+  ],
+  "d": 10.335,
+  "engine": "eleven"
+ },
+ "guard.2": {
+  "f": "guard_2.mp3",
+  "t": [
+   0.0,
+   6.177
+  ],
+  "d": 11.263,
+  "engine": "eleven"
+ },
+ "guard.3": {
+  "f": "guard_3.mp3",
+  "t": [
+   0.0,
+   5.956
+  ],
+  "d": 12.703,
+  "engine": "eleven"
+ },
+ "guard.4": {
+  "f": "guard_4.mp3",
+  "t": [
+   0.0,
+   6.815
+  ],
+  "d": 13.121,
+  "engine": "eleven"
+ }
+}

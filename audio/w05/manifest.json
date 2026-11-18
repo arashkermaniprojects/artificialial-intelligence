@@ -1,0 +1,218 @@
+{
+ "hill.0": {
+  "f": "hill_0.mp3",
+  "t": [
+   0.0,
+   6.687
+  ],
+  "d": 10.799,
+  "engine": "eleven"
+ },
+ "hill.1": {
+  "f": "hill_1.mp3",
+  "t": [
+   0.0,
+   4.098
+  ],
+  "d": 8.105,
+  "engine": "eleven"
+ },
+ "hill.2": {
+  "f": "hill_2.mp3",
+  "t": [
+   0.0,
+   3.204
+  ],
+  "d": 9.22,
+  "engine": "eleven"
+ },
+ "hill.3": {
+  "f": "hill_3.mp3",
+  "t": [
+   0.0,
+   6.049
+  ],
+  "d": 9.592,
+  "engine": "eleven"
+ },
+ "hill.4": {
+  "f": "hill_4.mp3",
+  "t": [
+   0.0,
+   4.238
+  ],
+  "d": 8.756,
+  "engine": "eleven"
+ },
+ "roll.0": {
+  "f": "roll_0.mp3",
+  "t": [
+   0.0,
+   6.861
+  ],
+  "d": 13.028,
+  "engine": "eleven"
+ },
+ "roll.1": {
+  "f": "roll_1.mp3",
+  "t": [
+   0.0,
+   8.057
+  ],
+  "d": 14.7,
+  "engine": "eleven"
+ },
+ "roll.2": {
+  "f": "roll_2.mp3",
+  "t": [
+   0.0,
+   7.802
+  ],
+  "d": 13.585,
+  "engine": "eleven"
+ },
+ "roll.3": {
+  "f": "roll_3.mp3",
+  "t": [
+   0.0,
+   4.47
+  ],
+  "d": 9.406,
+  "engine": "eleven"
+ },
+ "lr.0": {
+  "f": "lr_0.mp3",
+  "t": [
+   0.0,
+   5.526
+  ],
+  "d": 10.753,
+  "engine": "eleven"
+ },
+ "lr.1": {
+  "f": "lr_1.mp3",
+  "t": [
+   0.0,
+   4.644
+  ],
+  "d": 6.434,
+  "engine": "eleven"
+ },
+ "lr.2": {
+  "f": "lr_2.mp3",
+  "t": [
+   0.0,
+   5.166
+  ],
+  "d": 9.406,
+  "engine": "eleven"
+ },
+ "lr.3": {
+  "f": "lr_3.mp3",
+  "t": [
+   0.0,
+   4.319
+  ],
+  "d": 11.96,
+  "engine": "eleven"
+ },
+ "contour.0": {
+  "f": "contour_0.mp3",
+  "t": [
+   0.0,
+   7.372
+  ],
+  "d": 12.889,
+  "engine": "eleven"
+ },
+ "contour.1": {
+  "f": "contour_1.mp3",
+  "t": [
+   0.0,
+   4.47
+  ],
+  "d": 8.059,
+  "engine": "eleven"
+ },
+ "contour.2": {
+  "f": "contour_2.mp3",
+  "t": [
+   0.0,
+   4.098
+  ],
+  "d": 10.52,
+  "engine": "eleven"
+ },
+ "contour.3": {
+  "f": "contour_3.mp3",
+  "t": [
+   0.0,
+   6.571
+  ],
+  "d": 16.883,
+  "engine": "eleven"
+ },
+ "contour.4": {
+  "f": "contour_4.mp3",
+  "t": [
+   0.0,
+   4.18
+  ],
+  "d": 9.22,
+  "engine": "eleven"
+ },
+ "perc.0": {
+  "f": "perc_0.mp3",
+  "t": [
+   0.0,
+   9.996
+  ],
+  "d": 17.254,
+  "engine": "eleven"
+ },
+ "perc.1": {
+  "f": "perc_1.mp3",
+  "t": [
+   0.0,
+   4.667
+  ],
+  "d": 10.288,
+  "engine": "eleven"
+ },
+ "perc.2": {
+  "f": "perc_2.mp3",
+  "t": [
+   0.0,
+   8.069
+  ],
+  "d": 12.982,
+  "engine": "eleven"
+ },
+ "perc.3": {
+  "f": "perc_3.mp3",
+  "t": [
+   0.0,
+   7.047
+  ],
+  "d": 12.564,
+  "engine": "eleven"
+ },
+ "perc.4": {
+  "f": "perc_4.mp3",
+  "t": [
+   0.0,
+   5.283
+  ],
+  "d": 11.31,
+  "engine": "eleven"
+ },
+ "perc.5": {
+  "f": "perc_5.mp3",
+  "t": [
+   0.0,
+   4.528
+  ],
+  "d": 10.845,
+  "engine": "eleven"
+ }
+}

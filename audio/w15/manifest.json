@@ -1,0 +1,164 @@
+{
+ "fair.0": {
+  "f": "fair_0.mp3",
+  "t": [
+   0.0,
+   7.198
+  ],
+  "d": 12.285,
+  "engine": "eleven"
+ },
+ "fair.1": {
+  "f": "fair_1.mp3",
+  "t": [
+   0.0,
+   4.249
+  ],
+  "d": 10.845,
+  "engine": "eleven"
+ },
+ "fair.2": {
+  "f": "fair_2.mp3",
+  "t": [
+   0.0,
+   7.825
+  ],
+  "d": 16.093,
+  "engine": "eleven"
+ },
+ "fair.3": {
+  "f": "fair_3.mp3",
+  "t": [
+   0.0,
+   5.317
+  ],
+  "d": 15.35,
+  "engine": "eleven"
+ },
+ "fair.4": {
+  "f": "fair_4.mp3",
+  "t": [
+   0.0,
+   6.014
+  ],
+  "d": 16.047,
+  "engine": "eleven"
+ },
+ "explain.0": {
+  "f": "explain_0.mp3",
+  "t": [
+   0.0,
+   4.83
+  ],
+  "d": 11.356,
+  "engine": "eleven"
+ },
+ "explain.1": {
+  "f": "explain_1.mp3",
+  "t": [
+   0.0,
+   5.805
+  ],
+  "d": 13.353,
+  "engine": "eleven"
+ },
+ "explain.2": {
+  "f": "explain_2.mp3",
+  "t": [
+   0.0,
+   5.805
+  ],
+  "d": 9.174,
+  "engine": "eleven"
+ },
+ "explain.3": {
+  "f": "explain_3.mp3",
+  "t": [
+   0.0,
+   6.989
+  ],
+  "d": 12.935,
+  "engine": "eleven"
+ },
+ "tiers.0": {
+  "f": "tiers_0.mp3",
+  "t": [
+   0.0,
+   7.814
+  ],
+  "d": 13.167,
+  "engine": "eleven"
+ },
+ "tiers.1": {
+  "f": "tiers_1.mp3",
+  "t": [
+   0.0,
+   4.528
+  ],
+  "d": 13.818,
+  "engine": "eleven"
+ },
+ "tiers.2": {
+  "f": "tiers_2.mp3",
+  "t": [
+   0.0,
+   6.769
+  ],
+  "d": 12.378,
+  "engine": "eleven"
+ },
+ "tiers.3": {
+  "f": "tiers_3.mp3",
+  "t": [
+   0.0,
+   10.043
+  ],
+  "d": 13.446,
+  "engine": "eleven"
+ },
+ "map.0": {
+  "f": "map_0.mp3",
+  "t": [
+   0.0,
+   5.004
+  ],
+  "d": 9.777,
+  "engine": "eleven"
+ },
+ "map.1": {
+  "f": "map_1.mp3",
+  "t": [
+   0.0,
+   6.211
+  ],
+  "d": 12.517,
+  "engine": "eleven"
+ },
+ "map.2": {
+  "f": "map_2.mp3",
+  "t": [
+   0.0,
+   7.616
+  ],
+  "d": 12.842,
+  "engine": "eleven"
+ },
+ "map.3": {
+  "f": "map_3.mp3",
+  "t": [
+   0.0,
+   6.304
+  ],
+  "d": 11.635,
+  "engine": "eleven"
+ },
+ "map.4": {
+  "f": "map_4.mp3",
+  "t": [
+   0.0,
+   7.442
+  ],
+  "d": 13.492,
+  "engine": "eleven"
+ }
+}
