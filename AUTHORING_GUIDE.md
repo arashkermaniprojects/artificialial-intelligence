@@ -43,3 +43,12 @@ Write "A star", "alpha beta", "k means", "R N N" is fine as "recurrent network";
 
 ## Deliver
 Files you create: your lecture/lab js files (and widgets). Run `node tools/check_lecture.js <files>` until clean. Reply with a short list of files and anything the lead should look at.
+
+## Personal lab sheet (hand-in) for labs
+Every lab ends with a chapter `{id:'sheet', title:'Your personal lab sheet (hand in)', blocks:[{html:'...'},{labsheet: SHEET}]}`. See `labs/lab04.js` (the pilot).
+- The student types name + student ID. `assets/sheetcore.js` turns lab id + ID into a seed (same ID = same sheet, in the browser and in the teacher tool).
+- `SHEET = { title, marks:10, intro?, base(r){ shared random numbers }, tasks:[ {id, title, marks, kind:'task'|'challenge', gen(r,B){ return { html, code, fields:[{k,label,type:'text'|'num'|'long'|'code'}], key, note? } } } ] }`.
+- `r` is the seeded generator (r.int(a,b) inclusive, r.pick, r.float, r.shuffle). Use B (from base) for numbers shared by several tasks. Keep the order of r calls fixed.
+- `code` = a python cell that already contains THIS student's numbers (run in the browser with Pyodide, numpy only). `key` = python that prints lines `ANS name value`, run locally by `node tools/labkey.js labNN <studentID>` to give the correct answers. Marks: multiples of 0.5, total 10 (4 tasks of 1.5 + 2 challenges of 2).
+- Tasks: 4 tasks (run the code with your numbers, report numbers), 2 challenges (change or finish the code; explain). Every answer must differ between students (numbers, seeds, parameters), not only the numbers in the text.
+- Downloads (Word and PDF) are built by `assets/labsheet.js` in the standard CUD lab-manual look (logo, school name, LABORATORY MANUAL, teal headings, grey code blocks).

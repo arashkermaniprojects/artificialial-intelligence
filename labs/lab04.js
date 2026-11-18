@@ -74,6 +74,83 @@ const exUpdate = {
   }
 };
 
+/* ---------- personal lab sheet (hand in): tasks and challenges generated from the student ID ---------- */
+const PY_DATA = B => `import numpy as np
+np.random.seed(${B.ds})
+centres = np.array(${JSON.stringify(B.C)}, dtype=float)
+X = np.vstack([c + np.random.randn(${B.n}, 2) for c in centres])
+`;
+const PY_FUNCS = String.raw`
+def assign(X, C):
+    d2 = ((X[:, None, :] - C[None, :, :]) ** 2).sum(axis=2)
+    return d2.argmin(axis=1)
+
+def update(X, labels, C):
+    newC = C.copy()
+    for j in range(len(C)):
+        m = X[labels == j]
+        if len(m) > 0:
+            newC[j] = m.mean(axis=0)
+    return newC
+
+def inertia(X, labels, C):
+    return ((X - C[labels]) ** 2).sum()
+
+def kmeans(X, C, steps=50):
+    for it in range(steps):
+        labels = assign(X, C)
+        newC = update(X, labels, C)
+        if np.allclose(newC, C):
+            break
+        C = newC
+    labels = assign(X, C)
+    return C, labels, inertia(X, labels, C), it
+`;
+const lst = a => '[' + a.join(', ') + ']';
+const SHEET4 = {
+  title: 'My personal lab sheet: clustering', marks: 10,
+  intro: 'The numbers below are <b>personal</b>: they are generated from your student ID, so your data, your start points and your answers differ from those of your classmates. Run each code cell (press ▶ Run), copy the results into the answer boxes, add a screenshot of your results if you like, and finally download your sheet as <b>Word</b> or <b>PDF</b> and upload it to Moodle.',
+  base(r) {
+    let C; do { C = [0, 1, 2].map(() => [r.int(0, 12), r.int(0, 12)]); } while ([[0, 1], [0, 2], [1, 2]].some(([a, b]) => Math.hypot(C[a][0] - C[b][0], C[a][1] - C[b][1]) < 5));
+    const n = r.pick([20, 25, 30, 35, 40]), ds = r.int(1, 99);
+    const st = [r.int(0, n - 1), n + r.int(0, n - 1), 2 * n + r.int(0, n - 1)];
+    const a1 = r.int(0, n - 1); let a2; do { a2 = r.int(0, n - 1); } while (a2 === a1);
+    return { C, n, ds, st, bad: [a1, a2, n + r.int(0, n - 1)] };
+  },
+  tasks: [
+    { id: 't1', title: 'Make your own data', marks: 1.5, gen(r, B) {
+      const code = PY_DATA(B) + `print("shape:", X.shape)\nprint("mean x:", round(X[:, 0].mean(), 2))\nprint("mean y:", round(X[:, 1].mean(), 2))\n`;
+      return { html: `<p>Your data has three groups of <b>${B.n}</b> points around the centres <b>${B.C.map(c => '(' + c + ')').join(', ')}</b>, made with seed <b>${B.ds}</b>. Run the cell and report the shape of <code>X</code> and the mean of all points.</p>`, code,
+        fields: [{ k: 'shape', label: 'Shape of X, for example (90, 2)', type: 'text' }, { k: 'mx', label: 'Mean x (2 decimals)', type: 'num' }, { k: 'my', label: 'Mean y (2 decimals)', type: 'num' }],
+        key: code.replace(/print\("shape:"/, 'print("ANS shape"').replace(/print\("mean x:"/, 'print("ANS mean_x"').replace(/print\("mean y:"/, 'print("ANS mean_y"') }; } },
+    { id: 't2', title: 'One assign step', marks: 1.5, gen(r, B) {
+      const code = PY_DATA(B) + PY_FUNCS + `\nC = X[${lst(B.st)}].copy()      # your three start points: rows ${B.st.join(', ')} of X\nlabels = assign(X, C)\nprint("cluster sizes:", np.bincount(labels, minlength=3))\nprint("inertia:", round(inertia(X, labels, C), 2))\n`;
+      return { html: `<p>Use the data rows <b>${B.st.join(', ')}</b> as the three starting centres. Run <b>one assign step</b> (no update yet). How many points join each centre, and what is the inertia at that moment?</p>`, code,
+        fields: [{ k: 'sizes', label: 'Cluster sizes (three numbers)', type: 'text' }, { k: 'in', label: 'Inertia (2 decimals)', type: 'num' }],
+        key: code.replace('print("cluster sizes:"', 'print("ANS sizes"').replace('print("inertia:"', 'print("ANS inertia"') }; } },
+    { id: 't3', title: 'Run k means to the end', marks: 1.5, gen(r, B) {
+      const code = PY_DATA(B) + PY_FUNCS + `\nC0 = X[${lst(B.st)}].copy()\nC, labels, J, it = kmeans(X, C0)\nprint("stopped at round:", it)\nprint("final inertia:", round(J, 2))\nprint("final centres:\\n", C.round(2))\n`;
+      return { html: `<p>Start again from the same rows <b>${B.st.join(', ')}</b> and let k means run until the centres stop moving. Report the round at which it stopped, the final inertia, and the final centre of the first group.</p>`, code,
+        fields: [{ k: 'round', label: 'Stopped at round', type: 'num' }, { k: 'in', label: 'Final inertia (2 decimals)', type: 'num' }, { k: 'c0', label: 'First final centre, for example 1.02, 1.48', type: 'text' }],
+        key: code.replace('print("stopped at round:"', 'print("ANS round"').replace('print("final inertia:"', 'print("ANS inertia"').replace('print("final centres:\\n", C.round(2))', 'print("ANS centres", C.round(2).tolist())') }; } },
+    { id: 't4', title: 'Find the elbow', marks: 1.5, gen(r, B) {
+      const code = PY_DATA(B) + PY_FUNCS + `\nfor k in range(1, 7):\n    best = min(kmeans(X, X[np.random.RandomState(s).choice(len(X), k, replace=False)])[2] for s in range(5))\n    print(f"k = {k}: inertia = {best:.2f}")\n`;
+      return { html: `<p>Run the elbow experiment on <b>your</b> data (best of 5 random starts for every k). Report the inertia for k = 2 and k = 4, and say at which k the curve bends (the elbow).</p>`, code,
+        fields: [{ k: 'k2', label: 'Inertia for k = 2', type: 'num' }, { k: 'k4', label: 'Inertia for k = 4', type: 'num' }, { k: 'elbow', label: 'The elbow is at k =', type: 'num' }],
+        key: code.replace('print(f"k = {k}: inertia = {best:.2f}")', 'print(f"ANS k{k} {best:.2f}")') }; } },
+    { id: 'c1', kind: 'challenge', title: 'A bad start', marks: 2, gen(r, B) {
+      const code = PY_DATA(B) + PY_FUNCS + `\n# bad start: two centres from the first group, one from the second group\nC, labels, J, it = kmeans(X, X[${lst(B.bad)}].copy())\nprint("bad start: inertia", round(J, 2), "sizes", np.bincount(labels, minlength=3))\n# good start: one centre from each group\nC, labels, J2, it = kmeans(X, X[${lst(B.st)}].copy())\nprint("good start: inertia", round(J2, 2), "sizes", np.bincount(labels, minlength=3))\n`;
+      return { html: `<p>Run the bad start (rows <b>${B.bad.join(', ')}</b>) and the good start (rows <b>${B.st.join(', ')}</b>). Report both inertias and the three cluster sizes of the bad start. Is the bad start worse (higher inertia) than the good start? Explain in two sentences why a start can matter, using your own numbers.</p>`, code,
+        fields: [{ k: 'bad', label: 'Inertia of the bad start', type: 'num' }, { k: 'sizes', label: 'Cluster sizes of the bad start', type: 'text' }, { k: 'good', label: 'Inertia of the good start', type: 'num' }, { k: 'why', label: 'Your explanation (two sentences)', type: 'long' }],
+        key: code.replace('print("bad start: inertia", round(J, 2), "sizes", np.bincount(labels, minlength=3))', 'print("ANS bad_inertia", round(J, 2)); print("ANS bad_sizes", np.bincount(labels, minlength=3).tolist())').replace('print("good start: inertia", round(J2, 2), "sizes", np.bincount(labels, minlength=3))', 'print("ANS good_inertia", round(J2, 2))'), note: 'The explanation is marked by reading: a bad start can leave two centres in one group (or a centre covering two groups), so the inertia can stay higher. It may also recover; accept an honest comparison of the student\'s own numbers.' }; } },
+    { id: 'c2', kind: 'challenge', title: 'Fix it with restarts', marks: 2, gen(r, B) {
+      const code = PY_DATA(B) + PY_FUNCS + `\n# Challenge: run k means from 10 different random starts (seeds 0 to 9).\n# Keep the run with the LOWEST inertia and remember its seed.\nbest_J, best_seed, all_J = None, None, []\nfor s in range(10):\n    C0 = X[np.random.RandomState(s).choice(len(X), 3, replace=False)]\n    C, labels, J, it = kmeans(X, C0)\n    all_J.append(J)\n    # YOUR CODE HERE: update best_J and best_seed\nprint("lowest inertia:", round(best_J, 2))\nprint("seed of the best run:", best_seed)\nprint("starts that reached it:", sum(abs(j - best_J) < 0.01 for j in all_J), "of 10")\n`;
+      const keycode = PY_DATA(B) + PY_FUNCS + `\nres = []\nfor s in range(10):\n    C0 = X[np.random.RandomState(s).choice(len(X), 3, replace=False)]\n    C, labels, J, it = kmeans(X, C0)\n    res.append(J)\nb = int(np.argmin(res))\nprint("ANS best_inertia", round(res[b], 2))\nprint("ANS best_seed", b)\nprint("ANS reached", sum(abs(j - res[b]) < 0.01 for j in res))\n`;
+      return { html: `<p>Finish the code in the cell: run k means from 10 random starts and keep the best run. Report the lowest inertia, the seed that produced it, and how many of the 10 starts reached that lowest inertia. Paste your finished loop into the last box.</p>`, code,
+        fields: [{ k: 'best', label: 'Lowest inertia (2 decimals)', type: 'num' }, { k: 'seed', label: 'Seed of the best run', type: 'num' }, { k: 'reached', label: 'How many of the 10 starts reached it', type: 'num' }, { k: 'code', label: 'Your finished loop (paste your code)', type: 'code' }], key: keycode }; } }
+  ]
+};
+
 Course.lecture({
   id: 'lab04', num: 4, week: 4, kind: 'lab', title: 'Clustering with k means',
   lede: 'Write k means yourself in a few lines of numpy, watch the inertia fall, find the elbow, and see how a bad start can trap the algorithm.',
@@ -202,6 +279,10 @@ print("good start -> inertia", round(J, 2), " cluster sizes", np.bincount(labels
       { exercise: exNearest },
       { exercise: exUpdate },
       { exercise: exInertia }
+    ] }
+    ,{ id: 'sheet', title: 'Your personal lab sheet (hand in)', blocks: [
+      { html: '<p>This is the part you <b>hand in</b>. Your teacher gets your file from Moodle and compares it with the answers generated from your ID.</p>' },
+      { labsheet: SHEET4 }
     ] }
   ]
 });

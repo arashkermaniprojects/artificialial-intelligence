@@ -224,7 +224,7 @@
     }
   }
   Course.Fig = Fig;
-  Course.h = h; Course.rng = rng; Course.fmt = fmt; Course.$ = $; Course.$$ = $$; Course.store = store; Course.sleep = sleep; Course.ease = ease;
+  Course.h = h; Course.rng = rng; Course.fmt = fmt; Course.$ = $; Course.$$ = $$; Course.store = store; Course.sleep = sleep; Course.ease = ease; Course.mountPy = (...a) => mountPy(...a);
 
   /* ------------------------------ audio manifest ------------------------------ */
   const AUDIO = {};    // key "scene.step" -> {f, t:[sentence starts], d}
@@ -541,6 +541,7 @@
         else if (b.quiz) sec.append(mountQuiz(b.quiz));
         else if (b.exercise) { b.exercise._n = exN++; sec.append(mountExercise(b.exercise, lec)); }
         else if (b.py) sec.append(mountPy(b.py));
+        else if (b.labsheet) sec.append(Course.mountLabsheet(b.labsheet, lec));
         else if (b.widget) {
           const fn = Course.widgets[b.widget];
           const box = h('div', { class: 'widget' });
